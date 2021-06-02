@@ -37,7 +37,34 @@
               Email must be a valid email address
             </div>
           </div>
+          <!-- <div class="wrap-input100 validate-input" data-validate="Firstname is required">
+            <span class="label-input100">Firstname</span>
+            <input type="firstname" class="input100" name="firstname" [(ngModel)]="form.firstname" required firstname
+            #firstname="ngModel" placeholder="Type your firstname" />
+            <span class="focus-input100"></span>
+          </div>
           <br>
+          <div class="alert-danger" *ngIf="firstname.errors && f.submitted">
+            <div *ngIf="firstname.errors.required">Firstname is required</div>
+            <div *ngIf="firstname.errors.firstname">
+              Firstname must be a valid email address
+            </div>
+          </div>
+          <br>
+          <div class="wrap-input100 validate-input" data-validate="Lastname is required">
+            <span class="label-input100">Lastname</span>
+            <input type="lastname" class="input100" name="lastname" [(ngModel)]="form.lastname" required lastname
+            #lastname="ngModel" placeholder="Type your lastname" />
+            <span class="focus-input100"></span>
+          </div>
+          <br>
+          <div class="alert-danger" *ngIf="lastname.errors && f.submitted">
+            <div *ngIf="lastname.errors.required">Lastname is required</div>
+            <div *ngIf="lastname.errors.lastname">
+              Lastname must be a valid email address
+            </div>
+          </div>
+          <br> -->
           <div class="wrap-input100 validate-input" data-validate="Password is required">
             <span class="label-input100">Password</span>
             <input type="password" class="input100" name="password" [(ngModel)]="form.password" required

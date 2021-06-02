@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -160,7 +161,8 @@ public class AuthController {
 	
 	@PostMapping("/posts/file/upload")
 //	@Secured("ROLE_ADMIN")
-	public String uploadMultipartFile(@RequestParam("file") MultipartFile file, @RequestParam("title") String title2,  @RequestParam("content")String content2, @RequestParam("createdOn")  Date createdOn2 ) {
+	public String uploadMultipartFile(@RequestParam("file") MultipartFile file, @RequestParam("title") String title2,  @RequestParam("content")String content2,
+	@DateTimeFormat (pattern = "yyyy-MM-dd") @RequestParam("createdOn")  Date createdOn2 ) {
 		try {
 			Post filemode = new Post(file, title2, content2, createdOn2);
 			postRepository.save(filemode);

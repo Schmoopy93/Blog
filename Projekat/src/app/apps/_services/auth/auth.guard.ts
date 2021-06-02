@@ -1,6 +1,7 @@
 
-import { Injectable } from '@angular/core';
+import { Injectable, ɵsetCurrentInjector } from '@angular/core';
 import {CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
+import { TokenStorageService } from '../token-storage.service';
 
 
 @Injectable({
@@ -8,14 +9,15 @@ import {CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot} from '
 })
 export class AuthGuard implements CanActivate {
 
-
+  currentUser: any;
   constructor(
-    private router: Router
+    private router: Router, private token: TokenStorageService
   ) {}
 
   
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (sessionStorage.getItem("auth-user")) {
+    this.currentUser = this.token.getUser();
+    if (this.currentUser.roles == "ROLE_ADMIN") {
       return true;
     } else {
       this.router.navigate(['/']);

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class RegisterService {
-  uri = 'http://localhost:8080/spring-security-demo/users/api/users';
+  uri = 'http://localhost:4000/users/register';
 
   constructor(private http: HttpClient) { }
 
