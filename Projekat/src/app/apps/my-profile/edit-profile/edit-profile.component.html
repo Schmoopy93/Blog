@@ -1,0 +1,27 @@
+<div class="banner-innerpage">
+    <section class="signup">
+        <!-- <img src="images/signup-bg.jpg" alt=""> -->
+        <div class="container">
+            <div class="signup-content">
+                <form method="POST" id="signup-form" class="signup-form">
+                    <h2 class="form-title">Update User</h2>
+                    <!-- <div class="form-group">
+                        <input type="text" class="form-input" name="name" id="name" placeholder="Your Name">
+                    </div> -->
+                    <div class="form-group">
+                        <input type="email" class="form-input" name="email" id="email" placeholder="Change Your Nickname" #displayName [(ngModel)]="userData.displayName"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-input" name="displayName" id="displayName" placeholder="Change Your E-mail" #email [(ngModel)]="userData.email"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-input" name="address" id="address" placeholder="Set Your City" #address [(ngModel)]="userData.address"/>
+                    </div>
+                    <!-- <div class="form-group">
+                        <input type="submit" name="submit" id="submit" class="form-submit" value="Update" (click)="updateUser(email.value, displayName.value, address.value)"/>
+                    </div> -->
+                </form>
+            </div>
+        </div>
+    </section>
+</div>

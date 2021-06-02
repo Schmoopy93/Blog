@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="fa fa-bars"></span> Menu
+    </button>
+    <form action="#" class="searchform order-lg-last">
+      <div class="form-group d-flex">
+        <input type="text" class="form-control pl-3" placeholder="Search">
+        <button type="submit" placeholder="" class="form-control search"><span class="fa fa-search"></span></button>
+      </div>
+    </form>
+    <div class="collapse navbar-collapse" id="ftco-nav">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/"><i class="fa fa-home"></i>
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about"><i class="fa fa-globe"></i>
+            About
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a class="nav-link" routerLink="/register"><i class="fa fa-user-plus" aria-hidden="true"></i>
+            Sign Up
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="!isLoggedIn" routerLink="/login"><i class="fa fa-user" aria-hidden="true"></i>
+            Sign In
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="isLoggedIn" routerLink="/my-profile"><i class="fa fa-user-circle" aria-hidden="true"></i>
+            My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/recent-blogs"><i class="fa fa-edit" aria-hidden="true"></i>
+            Blog
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="isLoggedIn" (click)="logout()"><i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+            Sign Out
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
