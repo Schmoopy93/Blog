@@ -5,10 +5,6 @@ import { blogs } from './blog-data';
 import { Post } from 'src/app/post';
 
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
-
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +14,7 @@ export class ServiceblogService {
   postsURL: string;
 
   constructor(private http: HttpClient) {
-    this.postsURL = 'http://localhost:8080/api/auth/posts';
+    this.postsURL = 'http://localhost:4000/api/auth/posts';
   }
 
   public findAll(): Observable<Post[]> {
@@ -29,36 +25,16 @@ export class ServiceblogService {
     return this.http.get(`${this.postsURL}/${id}`);
   }
 
-  pushFileToStorage(file: File, title:string, content: string, createdOn: Date): Observable<HttpEvent<{}>> {
-    const formdata: FormData = new FormData();
- 
-    formdata.append('file', file);
-    formdata.append('title', title);
-    formdata.append('content', content);
-    formdata.append( 'createdOn', JSON.stringify(createdOn));
 
- 
-    const temp = {...formdata};
-    console.log(temp, 'temppp')
-    const req = new HttpRequest('POST', 'http://localhost:8080/api/auth/posts/file/upload', formdata, {
-      reportProgress: true,
-      responseType: 'text'
-    });
- 
-    return this.http.request(req);
+  addPost(title: string, content: string): Observable<any> {
+    
+    return this.http.post('http://localhost:4000/api/auth/posts', {
+      title,
+      content,
+    }
+    );
+    
   }
-
-  // addPost(title: string, content: string, createdOn: Date, currentFileUpload: File): Observable<any> {
-    
-  //   return this.http.post('http://localhost:8080/api/auth/posts/file/upload', {
-  //     title,
-  //     content,
-  //     createdOn,
-  //     currentFileUpload
-  //   },httpOptions
-  //   );
-    
-  // }
 
 
   

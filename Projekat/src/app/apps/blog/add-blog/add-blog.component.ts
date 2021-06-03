@@ -23,64 +23,30 @@ export class AddBlogComponent implements OnInit {
   form: any = {
     title: null,
     content: null,
-    createdOn: moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
+    // createdOn: moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
 
   };
 
   errorMessage = '';
 
 
-  constructor(private blogService: ServiceblogService, private authService: AuthService, private router: Router) { }
+  constructor(private blogService: ServiceblogService, private router: Router) { }
 
   ngOnInit(): void {
   }
 
-  selectFile(event) {
-    this.selectedFiles = event.target.files;
-  }
+  onSubmit(): void {
+    const { title, content } = this.form;
 
-  // upload() {
-  //   const { title, content, createdOn } = this.form;
-  //   this.progress.percentage = 0;
-
-
-  //   console.log(this.form, 'sta je fdate')
-  //   this.currentFileUpload = this.selectedFiles.item(0);
-  //   this.blogService.pushFileToStorage(this.currentFileUpload, title, content,createdOn).subscribe(event => {
-  //     if (event.type === HttpEventType.UploadProgress) {
-  //       this.progress.percentage = Math.round(100 * event.loaded / event.total);
-  //     } else if (event instanceof HttpResponse) {
-  //       console.log('File is completely uploaded!');
-  //       this.router.navigateByUrl('/', { skipLocationChange: false }).then(() => {
-  //         window.location.reload();
-  //       });
-  //     }
-  //   });
-  //   this.selectedFiles = undefined;
-  // }
-
-  onSubmit() {
-    const { title, content, createdOn } = this.form;
-    this.currentFileUpload = this.selectedFiles.item(0);
-    this.blogService.pushFileToStorage(this.currentFileUpload, title, content, createdOn).subscribe(
+    this.blogService.addPost(title, content).subscribe(
       data => {
-        if (data.type === HttpEventType.UploadProgress) {
-          this.progress.percentage = Math.round(100 * data.loaded / data.total);
-        } else if (event instanceof HttpResponse) {
-          console.log('File is completely uploaded!');
-          this.router.navigateByUrl('/', { skipLocationChange: false }).then(() => {
-            window.location.reload();
-          });
-        }
-        this.blogService.findAll().subscribe(data => {
-          this.posts = data || [];
-          this.router.navigate(['/recent-blogs'])
-        });
+        console.log(data);
       },
       err => {
         this.errorMessage = err.error.message;
       }
     );
+    this.reloadPage();
   }
 
   reloadPage(): void {

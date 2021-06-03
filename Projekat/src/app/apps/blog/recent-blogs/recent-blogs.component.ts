@@ -28,10 +28,10 @@ export class RecentBlogsComponent implements OnInit {
 
 
   sortRalliesByDateDesc() {
-    this.posts$ = this.posts$.pipe(map((posts => posts.sort((x, y) => +new Date(x.createdOn) - +new Date(y.createdOn)))));
+    this.posts$ = this.posts$.pipe(map((posts => posts.sort((x, y) => +new Date(x.createdAt) - +new Date(y.createdAt)))));
   }
   sortRalliesByDateAsc() {
-    this.posts$ = this.posts$.pipe(map((posts => posts.sort((a, b) => new Date(a.createdOn).getDate() - new Date(b.createdOn).getDate()))))
+    this.posts$ = this.posts$.pipe(map((posts => posts.sort((a, b) => new Date(a.createdAt).getDate() - new Date(b.createdAt).getDate()))))
   }
 
 
