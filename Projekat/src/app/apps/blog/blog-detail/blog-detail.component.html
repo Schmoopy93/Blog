@@ -40,6 +40,9 @@
         <p class="m-t-30 m-b-30">
           {{ currentPost?.content }}
         </p>
+        <p class="m-t-30 m-b-30">
+          Last time Updated: {{ currentPost?.updatedAt | date:"MMM d, y h:mm:ss a" }}
+        </p>
       </div>
     </div>
   </div>
