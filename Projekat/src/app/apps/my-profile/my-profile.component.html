@@ -1,6 +1,7 @@
 <div class="banner-innerpage">
   <div class="card-container">
     <img class="round" src="https://randomuser.me/api/portraits/women/79.jpg" alt="user" />
+    <h3>{{ currentUser.firstname }} {{ currentUser.lastname }}</h3>
     <h3>{{ currentUser.username }}</h3>
     <h5>{{ currentUser.email }}</h5>
     <h5>Joined At: {{ currentUser.createdAt | date: "MMM d, y h:mm:ss a" }}</h5>
