@@ -1,8 +1,5 @@
 const controller = require("../controllers/post.controller");
 
-const express = require('express');
-const route = express.Router()
-
 module.exports = function (app) {
   app.use(function (req, res, next) {
     res.header(
@@ -14,4 +11,9 @@ module.exports = function (app) {
 
   app.post("/api/auth/posts", controller.createPost);
   app.get('/api/auth/posts', controller.findAll);
+  app.get("/api/auth/posts/:id", controller.findOne);
+  app.put("/api/auth/posts/:id", controller.update);
+  app.delete("/api/auth/posts/:id", controller.delete);
+  app.delete("/api/auth/posts/", controller.deleteAll);
+
 }
