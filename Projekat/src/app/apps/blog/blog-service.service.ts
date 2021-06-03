@@ -25,18 +25,9 @@ export class ServiceblogService {
     return this.http.get(`${this.postsURL}/${id}`);
   }
 
-
   addPost(title: string, content: string): Observable<any> {
-    
     return this.http.post('http://localhost:4000/api/auth/posts', {
       title,
-      content,
+      content,});
     }
-    );
-    
   }
-
-
-  
-  
-}
