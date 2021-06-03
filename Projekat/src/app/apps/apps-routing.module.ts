@@ -15,6 +15,7 @@ import { EditProfileComponent } from './my-profile/edit-profile/edit-profile.com
 import { AddBlogComponent } from './blog/add-blog/add-blog.component';
 import { RecentBlogsComponent } from './blog/recent-blogs/recent-blogs.component';
 import { AuthGuard } from './_services/auth/auth.guard';
+import { EditBlogComponent } from './blog/edit-blog/edit-blog.component';
 
 
 const routes: Routes = [
@@ -33,7 +34,9 @@ const routes: Routes = [
       { path: 'add-blog', component: AddBlogComponent, canActivate:[AuthGuard], data: {
         roles: '[ROLE_ADMIN]'
       }},
-      { path: 'recent-blogs', component: RecentBlogsComponent}
+      { path: 'recent-blogs', component: RecentBlogsComponent},
+      { path: 'edit-post/:id', component: EditBlogComponent, canActivate:[AuthGuard], data: {
+        roles: '[ROLE_ADMIN]'}},
     ]
   }
 ];

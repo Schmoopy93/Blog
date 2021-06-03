@@ -28,6 +28,31 @@ export class ServiceblogService {
   addPost(title: string, content: string): Observable<any> {
     return this.http.post('http://localhost:4000/api/auth/posts', {
       title,
-      content,});
-    }
+      content,
+    });
   }
+
+  editPost(id) {
+    return this
+            .http
+            .get(`${this.postsURL}/${id}`);
+    }
+
+  updatePost(title, content, id) {
+
+    const obj = {
+      title: title,
+      content: content,
+    };
+    this
+      .http
+      .put(`${this.postsURL}/${id}`, obj)
+      .subscribe(res => console.log('Done'));
+  }
+
+  deletePost(id: number): Observable<any> {
+    return this.http.delete(`${this.postsURL}/${id}`, { responseType: 'text' });
+  }
+
+
+}

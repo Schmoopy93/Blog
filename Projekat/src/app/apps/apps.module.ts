@@ -27,6 +27,8 @@ import { MyProfileComponent } from './my-profile/my-profile.component';
 import { EditProfileComponent } from './my-profile/edit-profile/edit-profile.component';
 import { AddBlogComponent } from './blog/add-blog/add-blog.component';
 import { RecentBlogsComponent } from './blog/recent-blogs/recent-blogs.component';
+import { EditBlogComponent } from './blog/edit-blog/edit-blog.component';
+import { ConfirmationPopoverModule} from 'angular-confirmation-popover'
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import { RecentBlogsComponent } from './blog/recent-blogs/recent-blogs.component
     EditProfileComponent,
     AddBlogComponent,
     RecentBlogsComponent,
+    EditBlogComponent,
   ],
   imports: [
     CommonModule,
@@ -56,6 +59,9 @@ import { RecentBlogsComponent } from './blog/recent-blogs/recent-blogs.component
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    ConfirmationPopoverModule.forRoot({
+      confirmButtonType: 'danger'
+    })
   ],
   providers: [ServiceblogService],
 })
