@@ -1,18 +1,18 @@
 <div class="banner-innerpage">
   <div class="card-container">
     <img class="round" src="https://randomuser.me/api/portraits/women/79.jpg" alt="user" />
-    <h3>{{ currentUser.firstname }} {{ currentUser.lastname }}</h3>
-    <h3>{{ currentUser.username }}</h3>
-    <h5>{{ currentUser.email }}</h5>
-    <h5>Joined At: {{ currentUser.createdAt | date: "MMM d, y h:mm:ss a" }}</h5>
-    <p *ngFor="let role of currentUser.roles">{{ role }}</p>
+    <h3 style="color: #000000;">{{ currentUser.firstname }} {{ currentUser.lastname }}</h3>
+    <h3 style="color: #000000;">{{ currentUser.username }}</h3>
+    <h5 style="color: #000000;">{{ currentUser.email }}</h5>
+    <h5 style="color: #000000;">Joined At: {{ currentUser.createdAt | date: "MMM d, y h:mm:ss a" }}</h5>
+    <p *ngFor="let role of currentUser.roles" style="color: #000000;">{{ role }}</p>
     <div class="buttons" *ngIf="currentUser.roles== 'ROLE_ADMIN'">
-      <button class="primary" routerLink="/add-blog">
+      <button class="button" routerLink="/add-blog">
         Create a post
       </button>
     </div>
     <div class="buttons" *ngIf="currentUser.roles== 'ROLE_USER'">
-      <button class="primary" routerLink="/recent-blogs">
+      <button class="button" routerLink="/recent-blogs">
         View My Blog
       </button>
     </div>

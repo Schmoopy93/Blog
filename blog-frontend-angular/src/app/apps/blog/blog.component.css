@@ -43,6 +43,7 @@ ngb-carousel {
 }
 
 
+
 /* @media screen and (max-width: 1199px){
 	.container{
 		max-width: 100%;
@@ -950,7 +951,7 @@ input[type="url"]:focus::-webkit-input-placeholder,
 input[type="search"]:focus::-webkit-input-placeholder,
 input[type="tel"]:focus::-webkit-input-placeholder,
 input[type="color"]:focus::-webkit-input-placeholder {
-  color: #202040;
+  color: #32926F;
 }
 
 .form-control:focus::-moz-placeholder, select:focus::-moz-placeholder,
@@ -968,7 +969,7 @@ input[type="url"]:focus::-moz-placeholder,
 input[type="search"]:focus::-moz-placeholder,
 input[type="tel"]:focus::-moz-placeholder,
 input[type="color"]:focus::-moz-placeholder {
-  color: #202040;
+  color: #32926F;
 }
 
 .form-control:focus:-moz-placeholder, select:focus:-moz-placeholder,
@@ -986,7 +987,7 @@ input[type="url"]:focus:-moz-placeholder,
 input[type="search"]:focus:-moz-placeholder,
 input[type="tel"]:focus:-moz-placeholder,
 input[type="color"]:focus:-moz-placeholder {
-  color: #202040;
+  color: #32926F;
 }
 
 .form-control:focus:-ms-input-placeholder, select:focus:-ms-input-placeholder,
@@ -1005,7 +1006,7 @@ input[type="url"]:focus:-ms-input-placeholder,
 input[type="search"]:focus:-ms-input-placeholder,
 input[type="tel"]:focus:-ms-input-placeholder,
 input[type="color"]:focus:-ms-input-placeholder {
-  color: #202040;
+  color: #32926F;
 }
 
 .form-control[disabled], select[disabled], textarea[disabled],
@@ -1089,7 +1090,7 @@ body.md-skin-dark {
 }
 
 a {
-  color: #202040;
+  color: #32926F;
   transition: all .3s ease;
 }
 
@@ -1100,7 +1101,7 @@ a, input, textarea, select {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.33333;
-  color: #202040;
+  color: #32926F;
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -1223,13 +1224,13 @@ mark, .mark {
 }
 
 .box-number__number {
-  color: #f39c12;
+  color: #000000;
 }
 
 .box-number__number > h2 {
   font-size: 30px;
   font-weight: 300;
-  color: #f39c12;
+  color: #000000;
   margin-bottom: 5px;
   line-height: 1.333;
   display: inline-block;
@@ -1256,7 +1257,7 @@ mark, .mark {
 
 .box-number__description {
   font-weight: 700;
-  color: #c2c2c2;
+  color: #000000;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -1590,7 +1591,7 @@ mark, .mark {
 }
 
 .dropdown__content {
-  color: #202040;
+  color: #32926F;
   top: 100%;
   right: 0;
   position: absolute;
@@ -1638,7 +1639,7 @@ mark, .mark {
 .form-01__title {
   font-size: 30px;
   font-weight: 400;
-  color: #202040 !important;
+  color: #32926F !important;
   margin-bottom: 50px;
 }
 
@@ -2784,7 +2785,7 @@ mark, .mark {
 }
 
 .pagination__item:hover {
-  color: #202040;
+  color: #32926F;
 }
 
 .pagination__item.active {
@@ -3176,7 +3177,7 @@ mark, .mark {
 .pricing__price {
   font-weight: 700;
   font-size: 40px;
-  color: #202040;
+  color: #32926F;
   line-height: 1;
   margin-bottom: 35px;
 }
@@ -3970,7 +3971,7 @@ mark, .mark {
 .navbar-toggle > span {
   width: 31px;
   height: 3px;
-  background-color: #202040;
+  background-color: #32926F;
   display: block;
   margin: 5px auto;
   transition: all .3s ease-in-out;
@@ -4421,6 +4422,7 @@ mark, .mark {
 .slider__content {
   position: relative;
   z-index: 2;
+  max-height: 50%;
 }
 
 .slider__content h2 {

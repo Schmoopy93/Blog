@@ -5382,6 +5382,7 @@
   
   .bg-warning {
     background-color: #ffc107 !important; }
+    
   
   a.bg-warning:hover, a.bg-warning:focus,
   button.bg-warning:hover,
@@ -8144,7 +8145,7 @@
     -webkit-transition: .3s all ease;
     -o-transition: .3s all ease;
     transition: .3s all ease;
-    color: #f1bc31; }
+    color: #1B4E3B; }
     a:hover, a:focus {
       text-decoration: none !important;
       outline: none !important;
@@ -8180,7 +8181,7 @@
     background-position: center center; }
   
   .ftco-navbar-light {
-    background: #202040 !important;
+    background: #32926F !important;
     z-index: 3;
     padding: 0; }
     @media (max-width: 991.98px) {
@@ -8211,7 +8212,7 @@
         height: 100%;
         bottom: 0;
         left: 0;
-        background-color: #f1bc31;
+        background-color: #1B4E3B;
         visibility: hidden;
         -webkit-transform: scaleX(0);
         -ms-transform: scaleX(0);
@@ -8224,7 +8225,7 @@
         color: #fff; }
         .ftco-navbar-light .navbar-nav > .nav-item > .nav-link:hover:before {
           visibility: visible;
-          background-color: #f1bc31;
+          background-color: #1B4E3B;
           -webkit-transform: scaleX(1);
           -ms-transform: scaleX(1);
           transform: scaleX(1); }
@@ -8260,7 +8261,7 @@
             color: rgba(255, 255, 255, 0.8); } }
     .ftco-navbar-light .navbar-nav > .nav-item.cta > a {
       color: #fff;
-      background: #f1bc31;
+      background: #1B4E3B;
       border-radius: 0px; }
       @media (max-width: 767.98px) {
         .ftco-navbar-light .navbar-nav > .nav-item.cta > a {
@@ -8275,13 +8276,13 @@
       color: #fff; }
       .ftco-navbar-light .navbar-nav > .nav-item.active > a:before {
         visibility: visible;
-        background-color: #f1bc31;
+        background-color: #1B4E3B;
         -webkit-transform: scaleX(1);
         -ms-transform: scaleX(1);
         transform: scaleX(1); }
       @media (max-width: 991.98px) {
         .ftco-navbar-light .navbar-nav > .nav-item.active > a {
-          color: #f1bc31; }
+          color: #1B4E3B; }
           .ftco-navbar-light .navbar-nav > .nav-item.active > a:before {
             display: none; } }
     .ftco-navbar-light .navbar-toggler {
@@ -8320,8 +8321,8 @@
       .social-media p a span {
         color: #4d4d4d; }
       .social-media p a:hover {
-        background: #f1bc31;
-        border-color: #f1bc31; }
+        background: #1B4E3B;
+        border-color: #1B4E3B; }
         .social-media p a:hover span {
           color: #fff; }
   
