@@ -4,16 +4,6 @@
 
 export const environment = {
   production: false,
-  firebase : {
-    apiKey: "AIzaSyDWnPHQUBUQJPTJR28TxcSevY3ikt7xyzk",
-    authDomain: "hr-blog-f890a.firebaseapp.com",
-    databaseURL: "https://hr-blog-f890a-default-rtdb.firebaseio.com",
-    projectId: "hr-blog-f890a",
-    storageBucket: "hr-blog-f890a.appspot.com",
-    messagingSenderId: "1090867612624",
-    appId: "1:1090867612624:web:d30bb358c6aec335cf87d5",
-    measurementId: "G-H7X3QCLWNB"
-  }
 };
 
 /*
