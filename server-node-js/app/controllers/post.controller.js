@@ -1,16 +1,79 @@
 const db = require("../models");
 const Post = db.post;
+  
+const fs = require("fs");
+
 
 // Create and Save a new Post
+// exports.createPost = (req, res) => {
+//   Post.create({
+//     title: req.body.title,
+//     content: req.body.content
+//   })
+//     .catch(err => {
+//       res.status(500).send({ message: err.message });
+//     });
+// };
+
 exports.createPost = (req, res) => {
-  Post.create({
-    title: req.body.title,
-    content: req.body.content
-  })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
+  try {
+    console.log(req.file);
+
+    if (req.file == undefined) {
+      return res.send(`You must select a file.`);
+    }
+
+    Post.create({
+      title: req.body.title,
+      content: req.body.content,
+      type: req.file.mimetype,
+      name: req.file.originalname,
+      
+      data: fs.readFileSync(
+        __basedir + "/uploads/" + req.file.filename
+      ),
+    }).then((post) => {
+      fs.writeFileSync(
+        __basedir + "/uploads/" + post.name,
+        post.data
+      );
+
+
+      return res.send(`File has been uploaded.`);
     });
+  } catch (error) {
+    console.log(error);
+    return res.send(`Error when trying upload posts: ${error}`);
+  }
 };
+// exports.createPost = (req, res) => {
+// 	Post.create({
+//     title: req.body.title,
+//     content: req.body.content,
+// 		type: req.file.mimetype,
+// 		name: req.file.originalname,
+// 		pic: req.file.buffer.toString('base64')
+// 	}).then(file => {
+// 		console.log(file);
+
+// 		const result = {
+// 			status: "ok",
+// 			filename: req.file.originalname,
+// 			message: "Upload Successfully!",
+// 			// downloadUrl: "http://localhost:8080/api/file/" + file.dataValues.id,
+// 		}
+
+// 		res.json(result);
+// 	}).catch(err => {
+// 		console.log(err);
+
+// 		const result = {
+// 			status: "error",
+// 			error: err
+// 		}
+// 		res.json(result);
+// 	});
+// }
 // Retrieve all Posts from the database.
 exports.findAll = (req, res) => {
   const title = req.query.title;

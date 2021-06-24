@@ -1,5 +1,4 @@
 <div class="banner-innerpage">
-
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
@@ -36,7 +35,7 @@
             </div>
           </div>
           <br>
-          <!-- <div *ngIf="currentFileUpload" class="progress">
+          <div *ngIf="currentFileUpload" class="progress">
             <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
               attr.aria-valuenow="{{progress.percentage}}" aria-valuemin="0" aria-valuemax="100"
               [ngStyle]="{width:progress.percentage+'%'}">
@@ -46,7 +45,7 @@
           <label class="btn btn-default">
             <input type="file" (change)="selectFile($event)">
           </label>
-          <br> -->
+          <br>
           <div class="container-login100-form-btn">
             <div class="wrap-login100-form-btn">
               <div class="login100-form-bgbtn"></div>
@@ -59,42 +58,4 @@
       </div>
     </div>
   </div>
-
-
-    <!-- <section class="signup">
-      <div class="container">
-        <div class="signup-content">
-          <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate
-            id="signup-form" class="signup-form">
-            <h2 class="form-title">Create account</h2>
-            <div class="form-group">
-              <input type="text" class="form-control" name="title" [(ngModel)]="form.title" required minlength="3"
-                maxlength="20" #title="ngModel" placeholder="Title">
-            </div>
-            <div class="alert-danger" *ngIf="title.errors && f.submitted">
-              <div *ngIf="title.errors.required">Title is required</div>
-              <div *ngIf="title.errors.minlength">
-                Title must be at least 3 characters
-              </div>
-              <div *ngIf="title.errors.maxlength">
-                Title must be at most 20 characters
-              </div>
-            </div>
-            <div class="form-group">
-              <input type="text" class="form-control" name="content" [(ngModel)]="form.content" required content
-                #content="ngModel" placeholder="Content" />
-              <div class="alert-danger" *ngIf="content.errors && f.submitted">
-                <div *ngIf="content.errors.required">Content is required</div>
-                <div *ngIf="content.errors.content">
-                  Content must be a valid content address
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <button class="form-submit">Create A Post</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section> -->
   </div>

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { blogs } from './blog-data';
+import { Observable, of, Subject } from 'rxjs';
 import { Post } from 'src/app/post';
 
 
@@ -9,7 +8,7 @@ import { Post } from 'src/app/post';
   providedIn: 'root'
 })
 export class ServiceblogService {
-
+  private post$ = new Subject<Post[]>();
   Posts: Post[];
   postsURL: string;
 
@@ -24,13 +23,22 @@ export class ServiceblogService {
   public getPostById(id) {
     return this.http.get(`${this.postsURL}/${id}`);
   }
-
-  addPost(title: string, content: string): Observable<any> {
-    return this.http.post('http://localhost:4000/api/auth/posts', {
-      title,
-      content,
+  
+  addPost(file: File, title:string, content: string): Observable<HttpEvent<{}>> {
+    const formdata: FormData = new FormData();
+ 
+    formdata.append('file', file);
+    formdata.append('title', title);
+    formdata.append('content', content);
+ 
+    const req = new HttpRequest('POST', 'http://localhost:4000/api/auth/posts/upload', formdata, {
+      reportProgress: true,
+      responseType: 'text',
     });
+ 
+    return this.http.request(req);
   }
+
 
   editPost(id) {
     return this

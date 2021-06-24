@@ -3,10 +3,17 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
+global.__basedir = __dirname;
+// app.use(__basedir + "/resources/static/assets/uploads/", express.static('public'))
+
 
 var corsOptions = {
   origin: "http://localhost:4200"
 };
+
+
+app.use('/uploads', express.static(__dirname + '/uploads'));
+
 
 app.use(cors(corsOptions));
 
@@ -21,16 +28,15 @@ const db = require("./app/models");
 const Role = db.role;
 
 db.sequelize.sync();
-// r
 // db.sequelize.sync({force: true}).then(() => {
 //   console.log('Drop and Resync Database with { force: true }');
-  initial();
+//   initial();
 // });
 
 // simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
-});
+// app.get("/", (req, res) => {
+//   res.json({ message: "Welcome to bezkoder application." });
+// });
 
 // routes
 require('./app/routes/auth.routes')(app);

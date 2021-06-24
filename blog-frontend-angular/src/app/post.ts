@@ -5,4 +5,6 @@ export class Post{
     content:string;
     createdAt: Date;
     author: User[];
+    pic: ArrayBuffer;
+    mimetype: string;
 }

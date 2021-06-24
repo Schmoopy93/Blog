@@ -1,11 +1,8 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import moment from 'moment';
 import { Post } from 'src/app/post';
-import { User } from 'src/app/user';
-import { AuthService } from '../../_services/auth.service';
 import { ServiceblogService } from '../blog-service.service';
 
 
@@ -15,15 +12,15 @@ import { ServiceblogService } from '../blog-service.service';
   styleUrls: ['./add-blog.component.css']
 })
 export class AddBlogComponent implements OnInit {
+
+
   posts: Post[];
   selectedFiles: FileList;
   currentFileUpload: File;
-  // createdOn: Date;
   progress: { percentage: number } = { percentage: 0 };
   form: any = {
     title: null,
     content: null,
-    // createdOn: moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
 
   };
 
@@ -35,18 +32,40 @@ export class AddBlogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSubmit(): void {
+  selectFile(event) {
+    this.selectedFiles = event.target.files;
+  }
+
+  // onSubmit(): void {
+  //   const { title, content } = this.form;
+
+  //   this.blogService.addPost(title, content).subscribe(
+  //     data => {
+  //       console.log(data);
+  //     },
+  //     err => {
+  //       this.errorMessage = err.error.message;
+  //     }
+  //   );
+  //   this.reloadPage();
+  // }
+
+  onSubmit() {
+    this.progress.percentage = 0;
     const { title, content } = this.form;
 
-    this.blogService.addPost(title, content).subscribe(
-      data => {
-        console.log(data);
-      },
-      err => {
-        this.errorMessage = err.error.message;
+    this.currentFileUpload = this.selectedFiles.item(0);
+    this.blogService.addPost(this.currentFileUpload, title, content).subscribe(event => {
+      if (event.type === HttpEventType.UploadProgress) {
+        this.progress.percentage = Math.round(100 * event.loaded / event.total);
+      } else if (event instanceof HttpResponse) {
+        console.log('File is completely uploaded!');
+        this.router.navigateByUrl('/', { skipLocationChange: false }).then(() => {
+          window.location.reload();
+        });
       }
-    );
-    this.reloadPage();
+    });
+    this.selectedFiles = undefined;
   }
 
   reloadPage(): void {
