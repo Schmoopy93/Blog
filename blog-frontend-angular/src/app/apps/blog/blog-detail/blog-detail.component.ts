@@ -4,6 +4,7 @@ import { Post } from 'src/app/post';
 import { ServiceblogService } from '../blog-service.service';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
+import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
   selector: 'app-blog-detail',
@@ -16,11 +17,12 @@ export class BlogDetailComponent implements OnInit {
     currentPost = null;
     currentUser: any;
 
-    constructor(private blogService: ServiceblogService , public sanitizer: DomSanitizer, private router: Router, private route: ActivatedRoute) {
+    constructor(private blogService: ServiceblogService , public sanitizer: DomSanitizer, private router: Router, private route: ActivatedRoute, private token: TokenStorageService) {
     }
 
     ngOnInit(): void {
         this.getPost(this.route.snapshot.paramMap.get('id'));
+        this.currentUser = this.token.getUser();
         
 
     }
