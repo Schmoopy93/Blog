@@ -7,8 +7,8 @@ const main = async (token) => {
         service: 'gmail',
         port: 465,
         auth: {
-            user: 'mrrajic102@gmail.com',
-            pass: 'Kakojedobro1234'
+            user: '',
+            pass: ''
         }
     });
     
