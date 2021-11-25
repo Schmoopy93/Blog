@@ -2,6 +2,7 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
+const mailer = require('../middleware/mailer');
 
 const Op = db.Sequelize.Op;
 
@@ -10,12 +11,18 @@ var bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
   // Save User to Database
+
+  var token = jwt.sign({ id: req.body.username }, config.secret, {
+    expiresIn: 86400 // 24 hours
+  });
+
   User.create({
     username: req.body.username,
     email: req.body.email,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    isVerified: false
   })
     .then(user => {
       if (req.body.roles) {
@@ -25,16 +32,16 @@ exports.signup = (req, res) => {
               [Op.or]: req.body.roles
             }
           }
-        }).then(roles => {
+        }).then((roles) => {
           user.setRoles(roles).then(() => {
             res.send({ message: "User registered successfully!" });
-          });
+          })
         });
       } else {
         // user role = 1
         user.setRoles([1]).then(() => {
           res.send({ message: "User registered successfully!" });
-        });
+        }).then(() => mailer(token)).catch((err) => console.log('err u auth', err));
       }
     })
     .catch(err => {
@@ -64,12 +71,18 @@ exports.signin = (req, res) => {
           message: "Invalid Password!"
         });
       }
-
       var token = jwt.sign({ id: user.id }, config.secret, {
         expiresIn: 86400 // 24 hours
       });
 
       var authorities = [];
+      isVerified = false;
+
+      if (!isVerified) {
+        return res.status(401).send({
+          message: "Check your email and activate your account!"
+        });
+      }
       user.getRoles().then(roles => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push("ROLE_" + roles[i].name.toUpperCase());
@@ -90,3 +103,4 @@ exports.signin = (req, res) => {
       res.status(500).send({ message: err.message });
     });
 };
+

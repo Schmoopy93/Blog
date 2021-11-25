@@ -33,21 +33,12 @@ db.sequelize.sync();
 //   initial();
 // });
 
-// simple route
-// app.get("/", (req, res) => {
-//   res.json({ message: "Welcome to bezkoder application." });
-// });
-
 // routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/post.routes')(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
 
 function initial() {
   Role.create({
@@ -65,3 +56,8 @@ function initial() {
     name: "admin"
   });
 }
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});

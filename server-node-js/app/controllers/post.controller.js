@@ -3,18 +3,6 @@ const Post = db.post;
   
 const fs = require("fs");
 
-
-// Create and Save a new Post
-// exports.createPost = (req, res) => {
-//   Post.create({
-//     title: req.body.title,
-//     content: req.body.content
-//   })
-//     .catch(err => {
-//       res.status(500).send({ message: err.message });
-//     });
-// };
-
 exports.createPost = (req, res) => {
   try {
     console.log(req.file);
@@ -28,6 +16,7 @@ exports.createPost = (req, res) => {
       content: req.body.content,
       type: req.file.mimetype,
       name: req.file.originalname,
+      userId: req.userId,
       
       data: fs.readFileSync(
         __basedir + "/uploads/" + req.file.filename
@@ -46,34 +35,6 @@ exports.createPost = (req, res) => {
     return res.send(`Error when trying upload posts: ${error}`);
   }
 };
-// exports.createPost = (req, res) => {
-// 	Post.create({
-//     title: req.body.title,
-//     content: req.body.content,
-// 		type: req.file.mimetype,
-// 		name: req.file.originalname,
-// 		pic: req.file.buffer.toString('base64')
-// 	}).then(file => {
-// 		console.log(file);
-
-// 		const result = {
-// 			status: "ok",
-// 			filename: req.file.originalname,
-// 			message: "Upload Successfully!",
-// 			// downloadUrl: "http://localhost:8080/api/file/" + file.dataValues.id,
-// 		}
-
-// 		res.json(result);
-// 	}).catch(err => {
-// 		console.log(err);
-
-// 		const result = {
-// 			status: "error",
-// 			error: err
-// 		}
-// 		res.json(result);
-// 	});
-// }
 // Retrieve all Posts from the database.
 exports.findAll = (req, res) => {
   const title = req.query.title;
