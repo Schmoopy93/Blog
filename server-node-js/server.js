@@ -8,7 +8,7 @@ global.__basedir = __dirname;
 
 
 var corsOptions = {
-  origin: process.env.BASE_PATH
+  origin: "http://localhost:4200"
 };
 
 
