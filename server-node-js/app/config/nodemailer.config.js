@@ -22,7 +22,7 @@ module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
     html: `<h1>Activation link ✔</h1>
         <h2>Hello ${name}</h2>
         <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-        <a href=${process.env.BASE_PATH}/confirm/${confirmationCode}> Click here</a>
+        <a href=http://localhost:4200/confirm/${confirmationCode}> Click here</a>
         </div>`,
   }).catch(err => console.log(err));
 };
