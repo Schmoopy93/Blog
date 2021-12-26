@@ -8,7 +8,7 @@ global.__basedir = __dirname;
 
 
 var corsOptions = {
-  origin: "http://localhost:4200"
+  origin: process.env.BASE_PATH
 };
 
 
@@ -28,10 +28,10 @@ const db = require("./app/models");
 const Role = db.role;
 
 db.sequelize.sync();
-// db.sequelize.sync({force: true}).then(() => {
-//   console.log('Drop and Resync Database with { force: true }');
-//   initial();
-// });
+/*db.sequelize.sync({force: false}).then(() => {
+  console.log('Drop and Resync Database with { force: false }');
+  initial();
+});*/
 
 // routes
 require('./app/routes/auth.routes')(app);

@@ -2,12 +2,13 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
-const mailer = require('../middleware/mailer');
+const nodemailer = require("../config/nodemailer.config");
 
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const { user } = require("../models");
 
 exports.signup = (req, res) => {
   // Save User to Database
@@ -22,7 +23,7 @@ exports.signup = (req, res) => {
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     password: bcrypt.hashSync(req.body.password, 8),
-    isVerified: false
+    confirmationCode: token
   })
     .then(user => {
       if (req.body.roles) {
@@ -41,7 +42,11 @@ exports.signup = (req, res) => {
         // user role = 1
         user.setRoles([1]).then(() => {
           res.send({ message: "User registered successfully!" });
-        }).then(() => mailer(token)).catch((err) => console.log('err u auth', err));
+        }).then(() => nodemailer.sendConfirmationEmail(
+          user.username,
+          user.email,
+          user.confirmationCode
+        )).catch((err) => console.log(err));
       }
     })
     .catch(err => {
@@ -76,11 +81,9 @@ exports.signin = (req, res) => {
       });
 
       var authorities = [];
-      isVerified = false;
-
-      if (!isVerified) {
+      if (user.status != "Active") {
         return res.status(401).send({
-          message: "Check your email and activate your account!"
+          message: "Pending Account. Please Verify Your Email!",
         });
       }
       user.getRoles().then(roles => {
@@ -95,12 +98,37 @@ exports.signin = (req, res) => {
           firstname: user.firstname,
           lastname: user.lastname,
           roles: authorities,
-          accessToken: token
+          accessToken: token,
+          status: user.status,
         });
       });
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
+    
 };
 
+exports.verifyUser = (req, res, next) => {
+  User.findOne({ 
+    where:{
+      confirmationCode: req.params.confirmationCode
+    }
+      
+    
+  })
+    .then((user) => {
+      console.log(user);
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+      user.status = "Active";
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
+    })
+    .catch((e) => console.log("error", e));
+  };

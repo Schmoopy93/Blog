@@ -15,9 +15,13 @@ module.exports = (sequelize, Sequelize) => {
     lastname: {
       type: Sequelize.STRING
     },
-    isVerified: {
-      type:Sequelize.BOOLEAN
-    }
+    status: {
+      type: Sequelize.ENUM('Active', 'Pending') ,
+      defaultValue: 'Pending'
+    },
+    confirmationCode: { 
+      type: Sequelize.STRING, 
+      unique: true },
   });
 
   return User;
