@@ -1,11 +1,3 @@
-// const multer = require('multer');
-
-// var storage = multer.memoryStorage()
-// var upload = multer({storage: storage});
-
-
-// module.exports = upload;
-
 const multer = require("multer");
 
 const imageFilter = (req, file, cb) => {

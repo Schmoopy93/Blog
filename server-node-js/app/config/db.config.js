@@ -9,5 +9,7 @@ module.exports = {
     min: 0,
     acquire: 30000,
     idle: 10000
-  }
+  },
+  encoding: 'utf8',
+  charset: 'utf8mb4',
 };

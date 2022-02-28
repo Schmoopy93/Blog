@@ -28,15 +28,17 @@ const db = require("./app/models");
 const Role = db.role;
 
 db.sequelize.sync();
-/*db.sequelize.sync({force: false}).then(() => {
-  console.log('Drop and Resync Database with { force: false }');
-  initial();
-});*/
+// db.sequelize.sync({force: true}).then(() => {
+//   console.log('Drop and Resync Database with { force: true }');
+  
+// });
+//initial();
 
 // routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/post.routes')(app);
+require('./app/routes/comment-routes')(app);
 
 // set port, listen for requests
 

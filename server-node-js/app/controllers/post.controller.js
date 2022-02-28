@@ -2,6 +2,7 @@ const db = require("../models");
 const Post = db.post;
   
 const fs = require("fs");
+const { v4 } = require("uuid");
 
 exports.createPost = (req, res) => {
   try {
@@ -16,7 +17,7 @@ exports.createPost = (req, res) => {
       content: req.body.content,
       type: req.file.mimetype,
       name: req.file.originalname,
-      userId: req.userId,
+      userId: req.body.userId,
       
       data: fs.readFileSync(
         __basedir + "/uploads/" + req.file.filename

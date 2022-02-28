@@ -1,22 +1,6 @@
 const db = require("../models");
 const User = db.user;
 
-/*exports.findOne = (req, res) => {
-  console.log(req, 'reqqqqqqq');
-  const id = req;
-
-  User.findByPk(id)
-    .then(data => {
-      console.log(data, 'dataaaa');
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving Post with id=" + id
-      });
-    });
-};
-*/
 exports.findOne = (req, res) => {
   const id = req.params.id;
 

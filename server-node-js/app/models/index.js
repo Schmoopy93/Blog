@@ -42,23 +42,21 @@ db.user.belongsToMany(db.role, {
   otherKey: "roleId"
 });
 
-db.user.hasMany(db.appointment, { as: "appointment" });
-db.appointment.belongsTo(db.user, {
+db.post.belongsTo(db.user, {
+  through: "posts",
   foreignKey: "userId",
-  as: "user",
 });
 
-db.post.hasMany(db.comment, { as: "comment" });
+
+// db.comment.belongsTo(db.post, {
+//   through: "comments",
+//   foreignKey: "postId",
+// });
+
+db.post.hasMany(db.comment, { as: "comments" });
 db.comment.belongsTo(db.post, {
   foreignKey: "postId",
   as: "post",
-});
-
-
-db.user.hasMany(db.post, { as: "post" });
-db.post.belongsTo(db.user, {
-  foreignKey: "userId",
-  as: "user",
 });
 
 db.ROLES = ["user", "admin", "moderator"];
