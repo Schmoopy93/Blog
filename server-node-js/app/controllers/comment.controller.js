@@ -9,7 +9,8 @@ const { post } = require("../models");
 exports.createComment = (req, res) => {
   return Comment.create({
     content: req.body.content,
-    postId: req.body.postId
+    postId: req.body.postId,
+    userId: req.body.userId
   })
     .then((comment) => {
       console.log(">> Created comment: " + JSON.stringify(comment, null, 4));

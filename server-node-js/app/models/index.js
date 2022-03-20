@@ -47,16 +47,15 @@ db.post.belongsTo(db.user, {
   foreignKey: "userId",
 });
 
-
-// db.comment.belongsTo(db.post, {
-//   through: "comments",
-//   foreignKey: "postId",
-// });
-
 db.post.hasMany(db.comment, { as: "comments" });
 db.comment.belongsTo(db.post, {
   foreignKey: "postId",
   as: "post",
+});
+
+db.comment.belongsTo(db.user, {
+  through: "comments",
+  foreignKey: "userId",
 });
 
 db.ROLES = ["user", "admin", "moderator"];
