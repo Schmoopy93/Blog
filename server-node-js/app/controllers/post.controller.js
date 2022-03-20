@@ -16,7 +16,6 @@ exports.createPost = (req, res) => {
             type: req.file.mimetype,
             name: req.file.originalname,
             userId: req.body.userId,
-
             data: fs.readFileSync(
                 __basedir + "/uploads/" + req.file.filename
             ),

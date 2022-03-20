@@ -7,34 +7,34 @@ const { comment } = require("../models");
 const { post } = require("../models");
 
 exports.createComment = (req, res) => {
-  return Comment.create({
-    content: req.body.content,
-    postId: req.body.postId,
-    userId: req.body.userId
-  })
-    .then((comment) => {
-      console.log(">> Created comment: " + JSON.stringify(comment, null, 4));
-      return comment;
-    })
-    .catch((err) => {
-      console.log(">> Error while creating comment: ", err);
-    });
+    return Comment.create({
+            content: req.body.content,
+            postId: req.body.postId,
+            userId: req.body.userId
+        })
+        .then((comment) => {
+            console.log(">> Created comment: " + JSON.stringify(comment, null, 4));
+            return comment;
+        })
+        .catch((err) => {
+            console.log(">> Error while creating comment: ", err);
+        });
 };
 
 exports.findAll = (req, res) => {
-  const postId = req.query.postId;
-  var condition = postId ? { postId: { [Op.like]: `%${postId}%` } } : null;
+    const postId = req.query.postId;
+    var condition = postId ? { postId: {
+            [Op.like]: `%${postId}%` } } : null;
 
-  Comment.findAll({ where: condition })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving posts."
-      });
-    });
+    Comment.findAll({ where: condition })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving posts."
+            });
+        });
 };
 
 
