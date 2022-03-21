@@ -20,5 +20,6 @@ module.exports = function(app) {
     app.get('/api/auth/users', controller.findAll);
     app.get('/api/auth/users/:id', controller.findOne);
     app.put('/api/auth/users/:id', controller.update);
+    app.delete('/api/auth/users/:id', controller.delete);
 
 };
