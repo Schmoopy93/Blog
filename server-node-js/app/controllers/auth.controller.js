@@ -3,11 +3,10 @@ const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
 const nodemailer = require("../config/nodemailer.config");
-
 const Op = db.Sequelize.Op;
-
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+var crypto = require("crypto");
 const fs = require("fs");
 
 exports.signup = (req, res) => {
@@ -16,6 +15,7 @@ exports.signup = (req, res) => {
     var token = jwt.sign({ id: req.body.username }, config.secret, {
         expiresIn: 86400 // 24 hours
     });
+    var photoName = crypto.randomBytes(20).toString('hex');
 
     console.log(req.file);
 
@@ -31,7 +31,7 @@ exports.signup = (req, res) => {
         password: bcrypt.hashSync(req.body.password, 8),
         confirmationCode: token,
         type: req.file.mimetype,
-        photoName: req.file.originalname,
+        photoName: photoName,
         data: fs.readFileSync(
             __basedir + "/uploads/userphoto/" + req.file.filename
         ),
