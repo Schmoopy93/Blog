@@ -16,7 +16,6 @@ exports.signup = (req, res) => {
         expiresIn: 86400 // 24 hours
     });
     var photoName = crypto.randomBytes(20).toString('hex');
-
     console.log(req.file);
 
     if (req.file == undefined) {
@@ -113,7 +112,10 @@ exports.signin = (req, res) => {
                     status: user.status,
                     photoName: user.photoName,
                     type: user.type,
-                    data: user.data
+                    data: user.data,
+                    address: user.address,
+                    phone: user.phone,
+                    town: user.town
 
                 });
             });
@@ -204,7 +206,6 @@ exports.update = (req, res) => {
             });
         });
 };
-
 exports.delete = (req, res) => {
     const id = req.params.id;
 
