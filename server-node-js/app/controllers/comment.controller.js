@@ -1,10 +1,22 @@
 const req = require("express/lib/request");
 const db = require("../models");
 const Comment = db.comment;
-const Post = db.post;
 const Op = db.Sequelize.Op;
-const { comment } = require("../models");
-const { post } = require("../models");
+
+const getPagination = (page, size) => {
+    const limit = size ? +size : 6;
+    const offset = page ? page * limit : 0;
+
+    return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: posts } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return { totalItems, posts, totalPages, currentPage };
+};
 
 exports.createComment = (req, res) => {
     return Comment.create({
@@ -23,8 +35,11 @@ exports.createComment = (req, res) => {
 
 exports.findAll = (req, res) => {
     const postId = req.query.postId;
-    var condition = postId ? { postId: {
-            [Op.like]: `%${postId}%` } } : null;
+    var condition = postId ? {
+        postId: {
+            [Op.like]: `%${postId}%`
+        }
+    } : null;
 
     Comment.findAll({ where: condition })
         .then(data => {
@@ -33,6 +48,41 @@ exports.findAll = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message: err.message || "Some error occurred while retrieving posts."
+            });
+        });
+};
+
+exports.findAllPagination = (req, res) => {
+    const { page, size, content } = req.query;
+    var condition = content ? {
+        content: {
+            [Op.like]: `%${content}%`
+        }
+    } : null;
+
+    const { limit, offset } = getPagination(page, size);
+
+    Comment.findAndCountAll({ where: condition, limit, offset })
+        .then(data => {
+            const response = getPagingData(data, page, limit);
+            res.send(response);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving tutorials."
+            });
+        });
+};
+exports.findOne = (req, res) => {
+    const id = req.params.id;
+
+    Comment.findByPk(id)
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error retrieving Comment with id=" + id
             });
         });
 };
