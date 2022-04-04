@@ -41,7 +41,7 @@ exports.findAll = (req, res) => {
         }
     } : null;
 
-    Comment.findAll({ where: condition })
+    Comment.findAll({ where: condition, include: db.user })
         .then(data => {
             res.send(data);
         })
