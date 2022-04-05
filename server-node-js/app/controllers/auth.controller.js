@@ -9,6 +9,21 @@ var bcrypt = require("bcryptjs");
 var crypto = require("crypto");
 const fs = require("fs");
 
+const getPagination = (page, size) => {
+    const limit = size ? +size : 10;
+    const offset = page ? page * limit : 0;
+
+    return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: users } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return { totalItems, users, totalPages, currentPage };
+};
+
 exports.signup = (req, res) => {
     // Save User to Database
 
@@ -151,20 +166,23 @@ exports.verifyUser = (req, res, next) => {
 };
 
 exports.findAll = (req, res) => {
-    const username = req.query.username;
+    const {username, page, size} = req.query;
     var condition = username ? {
         username: {
             [Op.like]: `%${username}%`
         }
     } : null;
 
-    User.findAll({ where: condition })
+    const { limit, offset } = getPagination(page, size);
+
+    User.findAndCountAll({ where: condition, limit, offset })
         .then(data => {
-            res.send(data);
+            const response = getPagingData(data, page, limit);
+            res.send(response);
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving posts."
+                message: err.message || "Some error occurred while retrieving tutorials."
             });
         });
 };
