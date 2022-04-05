@@ -146,8 +146,6 @@ exports.verifyUser = (req, res, next) => {
             where: {
                 confirmationCode: req.params.confirmationCode
             }
-
-
         })
         .then((user) => {
             console.log(user);
@@ -166,10 +164,10 @@ exports.verifyUser = (req, res, next) => {
 };
 
 exports.findAll = (req, res) => {
-    const {username, page, size} = req.query;
-    var condition = username ? {
-        username: {
-            [Op.like]: `%${username}%`
+    const {firstname, page, size} = req.query;
+    var condition = firstname ? {
+        firstname: {
+            [Op.like]: `%${firstname}%`
         }
     } : null;
 
