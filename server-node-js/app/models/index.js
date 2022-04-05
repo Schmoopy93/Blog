@@ -45,6 +45,12 @@ db.post.belongsTo(db.user, {
     foreignKey: "userId",
 });
 
+db.post.hasMany(db.comment, { as: "comments" });
+db.comment.belongsTo(db.post, {
+    foreignKey: "postId",
+    as: "post",
+});
+
 db.user.hasMany(db.comment);
 db.comment.belongsTo(db.user);
 
