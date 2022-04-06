@@ -27,6 +27,7 @@ db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.post = require("../models/post-model.js")(sequelize, Sequelize);
 db.comment = require("../models/comment-model.js")(sequelize, Sequelize);
+db.appointment = require("../models/appointment-model.js")(sequelize, Sequelize);
 
 
 db.role.belongsToMany(db.user, {
@@ -53,6 +54,9 @@ db.comment.belongsTo(db.post, {
 
 db.user.hasMany(db.comment);
 db.comment.belongsTo(db.user);
+
+db.user.hasMany(db.appointment);
+db.appointment.belongsTo(db.user);
 
 
 db.ROLES = ["user", "admin", "moderator"];
