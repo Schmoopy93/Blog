@@ -8,6 +8,10 @@ module.exports = (sequelize, Sequelize) => {
         content: {
             type: Sequelize.STRING
         },
+        date: {
+            type: Sequelize.STRING,
+            required: true,
+        }
     });
     return Appointment;
 };
