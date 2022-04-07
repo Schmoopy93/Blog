@@ -5,10 +5,10 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        content: {
+        title: {
             type: Sequelize.STRING
         },
-        date: {
+        start: {
             type: Sequelize.STRING,
             required: true,
         }

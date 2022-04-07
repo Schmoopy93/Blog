@@ -20,9 +20,9 @@ const Op = db.Sequelize.Op;
 
 exports.createAppointment = (req, res) => {
     return Appointment.create({
-            content: req.body.content,
+            title: req.body.title,
             userId: req.body.userId,
-            date: req.body.date
+            start: req.body.start
         })
         .then((appointment) => {
             console.log(">> Created appointment: " + JSON.stringify(appointment, null, 4));
