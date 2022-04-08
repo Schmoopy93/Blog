@@ -12,4 +12,5 @@ module.exports = function(app) {
     app.post("/api/auth/createAppointments", controller.createAppointment);
     app.get('/api/auth/findAllAppointments', controller.findAll);
     app.get("/api/auth/findAllAppointments/:id", controller.findOne);
+    app.delete('/api/auth/findAllAppointments/:id', controller.delete);
 }

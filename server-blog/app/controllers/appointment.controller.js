@@ -86,3 +86,27 @@ exports.findOne = (req, res) => {
             });
         });
 };
+
+exports.delete = (req, res) => {
+    const id = req.params.id;
+
+    Appointment.destroy({
+            where: { id: id }
+        })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Appointment was deleted successfully!"
+                });
+            } else {
+                res.send({
+                    message: `Cannot delete Appointment with id=${id}. Maybe Appointment was not found!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Appointment with id=" + id
+            });
+        });
+};
