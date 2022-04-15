@@ -11,11 +11,11 @@ const getPagination = (page, size) => {
 };
 
 const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: posts } = data;
+    const { count: totalItems, rows: comments } = data;
     const currentPage = page ? +page : 0;
     const totalPages = Math.ceil(totalItems / limit);
 
-    return { totalItems, posts, totalPages, currentPage };
+    return { totalItems, comments, totalPages, currentPage };
 };
 
 exports.createComment = (req, res) => {
@@ -47,7 +47,7 @@ exports.findAll = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving posts."
+                message: err.message || "Some error occurred while retrieving comments."
             });
         });
 };
@@ -83,6 +83,30 @@ exports.findOne = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message: "Error retrieving Comment with id=" + id
+            });
+        });
+};
+
+exports.delete = (req, res) => {
+    const id = req.params.id;
+
+    Comment.destroy({
+            where: { id: id }
+        })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Comment was deleted successfully!"
+                });
+            } else {
+                res.send({
+                    message: `Cannot delete Comment with id=${id}. Maybe Comment was not found!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Comment with id=" + id
             });
         });
 };

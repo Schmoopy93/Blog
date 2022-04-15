@@ -9,9 +9,9 @@ module.exports = function(app) {
         );
         next();
     });
-    // app.post('/api/auth/posts/upload', upload.single("file"), fileWorker.createPost, controller.createPost);
     app.post("/api/auth/comments", controller.createComment);
     app.get('/api/auth/showComments', controller.findAll);
-    app.get('/api/auth/showComments', controller.findAllPagination);
+    app.get('/api/auth/showAllPaginatedComments', controller.findAllPagination);
     app.get("/api/auth/showComments/:id", controller.findOne);
+    app.delete("/api/auth/showComments/:id", controller.delete);
 }
