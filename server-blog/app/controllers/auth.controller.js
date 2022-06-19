@@ -3,6 +3,7 @@ const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
 const nodemailer = require("../config/nodemailer.config");
+const nodemailerRetrievePassword = require("../config/nodemailer.retrivepass.config");
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -245,3 +246,47 @@ exports.delete = (req, res) => {
             });
         });
 };
+
+exports.retrievePassowrd = (req, res) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            console.log(err)
+        }
+        const token = buffer.toString("hex")
+        User.findOne({ email: req.body.email })
+            .then(user => {
+                if (!user) {
+                    return res.status(422).json({ error: "User dont exists with that email" })
+                }
+                user.resetToken = token
+                user.expireToken = Date.now() + 3600000
+                user.save().then(() => nodemailerRetrievePassword.resetPassowrd(
+                    user.username,
+                    user.email,
+                    user.confirmationCode
+                )).catch((err) => console.log(err))
+                res.json({ message: "Check your email" })
+            })
+    })
+}
+
+exports.newPassword = (req, res) => {
+    const newPassword = req.body.password
+    const sentToken = req.body.token
+    User.findOne({ resetToken: sentToken, expireToken: { $gt: Date.now() } })
+        .then(user => {
+            if (!user) {
+                return res.status(422).json({ error: "Try again session expired" })
+            }
+            bcrypt.hash(newPassword, 12).then(hashedpassword => {
+                user.password = hashedpassword
+                user.resetToken = undefined
+                user.expireToken = undefined
+                user.save().then((saveduser) => {
+                    res.json({ message: "Password updated success" })
+                })
+            })
+        }).catch(err => {
+            console.log(err)
+        })
+}

@@ -21,5 +21,7 @@ module.exports = function(app) {
     app.get('/api/auth/users/:id', controller.findOne);
     app.put('/api/auth/users/:id', controller.update);
     app.delete('/api/auth/users/:id', controller.delete);
+    app.post('/api/auth/users/retrieve-password', controller.retrievePassowrd);
+    app.post('/api/auth/users/new-password', controller.newPassword);
 
 };

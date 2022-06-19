@@ -45,7 +45,13 @@ module.exports = (sequelize, Sequelize) => {
         },
         town: {
             type: Sequelize.STRING
-        }
+        },
+        resetToken: {
+            type: Sequelize.STRING
+        },
+        expireToken: {
+            type: Sequelize.DATE
+        },
     });
 
     return User;
