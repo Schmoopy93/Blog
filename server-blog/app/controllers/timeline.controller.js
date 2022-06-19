@@ -57,14 +57,16 @@ exports.findAllPagination = (req, res) => {
         userId: {
             [Op.like]: `%${userId}%`
         }
+
     } : null;
 
     const { limit, offset } = getPagination(page, size);
 
-    Timeline.findAndCountAll({ where: condition, limit, offset, include: db.user })
+    Timeline.findAndCountAll({ where: condition, limit, offset })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
+
         })
         .catch(err => {
             res.status(500).send({
@@ -82,6 +84,30 @@ exports.findOne = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message: "Error retrieving Timeline with id=" + id
+            });
+        });
+};
+
+exports.update = (req, res) => {
+    const id = req.params.id;
+
+    Timeline.update(req.body, {
+            where: { id: id }
+        })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Timeline was updated successfully."
+                });
+            } else {
+                res.send({
+                    message: `Cannot update Timeline with id=${id}. Maybe Timeline was not found or req.body is empty!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error updating Timeline with id=" + id
             });
         });
 };
