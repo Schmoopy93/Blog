@@ -18,7 +18,9 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,8 +30,8 @@ const db = require("./app/models");
 const Role = db.role;
 
 db.sequelize.sync();
-// db.sequelize.sync({force: true}).then(() => {
-//   console.log('Drop and Resync Database with { force: true }');
+// db.sequelize.sync({ force: true }).then(() => {
+//     console.log('Drop and Resync Database with { force: true }');
 
 // });
 // initial();
@@ -40,6 +42,7 @@ require('./app/routes/user.routes')(app);
 require('./app/routes/post.routes')(app);
 require('./app/routes/comment-routes')(app);
 require('./app/routes/appointment.routes')(app);
+require('./app/routes/timeline.routes')(app);
 
 // set port, listen for requests
 

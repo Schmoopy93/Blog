@@ -108,7 +108,7 @@ exports.signin = (req, res) => {
             var authorities = [];
             if (user.status != "Active") {
                 return res.status(401).send({
-                    message: "Pending Account. Please Verify Your Email!",
+                    message: "Please Verify Your Email!",
                 });
             }
             user.getRoles().then(roles => {
@@ -164,7 +164,7 @@ exports.verifyUser = (req, res, next) => {
 };
 
 exports.findAll = (req, res) => {
-    const {firstname, page, size} = req.query;
+    const { firstname, page, size } = req.query;
     var condition = firstname ? {
         firstname: {
             [Op.like]: `%${firstname}%`
