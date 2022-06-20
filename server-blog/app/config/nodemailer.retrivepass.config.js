@@ -14,7 +14,7 @@ const transport = nodemailer.createTransport({
     },
 });
 
-module.exports.resetPassowrd = (name, email, confirmationCode) => {
+module.exports.resetPassowrd = (name, email, token) => {
     transport.sendMail({
         from: '"Pogled Unutra Blog" <foo@example.com>', // sender address,
         to: email,
@@ -22,6 +22,7 @@ module.exports.resetPassowrd = (name, email, confirmationCode) => {
         html: `<h1>Retrieve password link ✔</h1>
         <h2>Hello ${name}</h2>
         <p>You requested for password reset</p>
+        <a href=http://localhost:4200/reset-password/${token}> Click here</a>
         </div>`,
     }).catch(err => console.log(err));
 };

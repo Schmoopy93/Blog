@@ -253,19 +253,19 @@ exports.retrievePassowrd = (req, res) => {
             console.log(err)
         }
         const token = buffer.toString("hex")
-        User.findOne({ email: req.body.email })
+        User.findOne({ where: { email: req.body.email } })
             .then(user => {
                 if (!user) {
-                    return res.status(422).json({ error: "User dont exists with that email" })
+                    return res.status(404).send({ message: "User Not found with that email" });
                 }
                 user.resetToken = token
                 user.expireToken = Date.now() + 3600000
                 user.save().then(() => nodemailerRetrievePassword.resetPassowrd(
                     user.username,
                     user.email,
-                    user.confirmationCode
-                )).catch((err) => console.log(err))
-                res.json({ message: "Check your email" })
+                    token
+                ))
+                return res.status(404).send({ message: "Check your email " + user.email })
             })
     })
 }
@@ -273,17 +273,19 @@ exports.retrievePassowrd = (req, res) => {
 exports.newPassword = (req, res) => {
     const newPassword = req.body.password
     const sentToken = req.body.token
-    User.findOne({ resetToken: sentToken, expireToken: { $gt: Date.now() } })
+        // User.findOne({ where: { resetToken: sentToken, expireToken: { $gt: Date.now() } } })
+    User.findOne({ where: { resetToken: sentToken } })
         .then(user => {
+
             if (!user) {
-                return res.status(422).json({ error: "Try again session expired" })
+                return res.status(422).send({ error: "Try again session expired" })
             }
             bcrypt.hash(newPassword, 12).then(hashedpassword => {
                 user.password = hashedpassword
                 user.resetToken = undefined
                 user.expireToken = undefined
                 user.save().then((saveduser) => {
-                    res.json({ message: "Password updated success" })
+                    return res.status(404).send({ message: "Password updated success" })
                 })
             })
         }).catch(err => {
