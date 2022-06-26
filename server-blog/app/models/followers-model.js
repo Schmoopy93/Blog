@@ -17,8 +17,8 @@ module.exports = function(sequelize, Sequelize) {
             }
         },
         status: {
-            type: Sequelize.ENUM('Follow', 'Unfollow'),
-            defaultValue: 'Unfollow'
+            type: Sequelize.ENUM('Requested', 'Following'),
+            defaultValue: 'Requested'
         },
     }, {
         freezeTableName: true

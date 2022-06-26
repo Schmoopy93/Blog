@@ -11,4 +11,5 @@ module.exports = function(app) {
     });
     app.post('/api/auth/following', [verifySignUp.checkFollow], controller.follow);
     app.get('/api/auth/followRequest', controller.following);
+    app.delete("/api/auth/unfollow/:id", controller.unfollow);
 }

@@ -39,3 +39,27 @@ exports.following = (req, res) => {
             });
         });
 };
+
+exports.unfollow = (req, res) => {
+    const id = req.params.id;
+
+    Followers.destroy({
+            where: { id: id }
+        })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Following was deleted successfully!"
+                });
+            } else {
+                res.send({
+                    message: `Cannot delete Following with id=${id}. Maybe Following was not found!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Following with id=" + id
+            });
+        });
+};
