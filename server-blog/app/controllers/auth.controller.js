@@ -2,6 +2,7 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
+const Followers = db.followers;
 const nodemailer = require("../config/nodemailer.config");
 const nodemailerRetrievePassword = require("../config/nodemailer.retrivepass.config");
 const Op = db.Sequelize.Op;
@@ -174,7 +175,7 @@ exports.findAll = (req, res) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    User.findAndCountAll({ where: condition, limit, offset })
+    User.findAndCountAll({ where: condition, limit, offset, include: db.followers })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);

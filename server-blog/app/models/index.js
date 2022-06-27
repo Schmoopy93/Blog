@@ -59,6 +59,7 @@ db.comment.belongsTo(db.user);
 
 db.user.hasMany(db.appointment);
 db.appointment.belongsTo(db.user);
+db.user.hasMany(db.followers);
 
 db.timeline.belongsTo(db.user, {
     through: "timelines",
