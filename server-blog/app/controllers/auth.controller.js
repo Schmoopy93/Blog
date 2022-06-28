@@ -165,6 +165,28 @@ exports.verifyUser = (req, res, next) => {
         .catch((e) => console.log("error", e));
 };
 
+exports.findAllPaginatedForUserList = (req, res) => {
+    const { firstname, page, size } = req.query;
+    var condition = firstname ? {
+        firstname: {
+            [Op.like]: `%${firstname}%`
+        }
+    } : null;
+
+    const { limit, offset } = getPagination(page, size);
+
+    User.findAndCountAll({ where: condition, limit, offset })
+        .then(data => {
+            const response = getPagingData(data, page, limit);
+            res.send(response);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving tutorials."
+            });
+        });
+};
+
 exports.findAll = (req, res) => {
     const { firstname, page, size } = req.query;
     var condition = firstname ? {
@@ -175,7 +197,7 @@ exports.findAll = (req, res) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    User.findAndCountAll({ where: condition, limit, offset, include: db.followers })
+    User.findAndCountAll({ where: condition, limit, offset, include: [db.followers] })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);

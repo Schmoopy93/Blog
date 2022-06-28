@@ -18,6 +18,7 @@ module.exports = function(app) {
         verifySignUp.checkRolesExisted
     ], controller.signup);
     app.get('/api/auth/users', controller.findAll);
+    app.get('/api/auth/users/list-users', controller.findAllPaginatedForUserList);
     app.get('/api/auth/users/:id', controller.findOne);
     app.put('/api/auth/users/:id', controller.update);
     app.delete('/api/auth/users/:id', controller.delete);
