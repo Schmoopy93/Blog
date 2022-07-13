@@ -53,16 +53,16 @@ exports.findAll = (req, res) => {
 };
 
 exports.findAllPagination = (req, res) => {
-    const { page, size, content } = req.query;
-    var condition = content ? {
-        content: {
-            [Op.like]: `%${content}%`
+    const { page, size, postId } = req.query;
+    var condition = postId ? {
+        postId: {
+            [Op.like]: `%${postId}%`
         }
     } : null;
 
     const { limit, offset } = getPagination(page, size);
 
-    Comment.findAndCountAll({ where: condition, limit, offset })
+    Comment.findAndCountAll({ where: condition, limit, offset, include: db.user })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
