@@ -44,6 +44,7 @@ require('./app/routes/comment-routes')(app);
 require('./app/routes/appointment.routes')(app);
 require('./app/routes/timeline.routes')(app);
 require('./app/routes/followers.routes')(app);
+require('./app/routes/roles.routes')(app);
 
 
 function initial() {

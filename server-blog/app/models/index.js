@@ -30,6 +30,7 @@ db.comment = require("../models/comment-model.js")(sequelize, Sequelize);
 db.appointment = require("../models/appointment-model.js")(sequelize, Sequelize);
 db.timeline = require("../models/timeline-model.js")(sequelize, Sequelize);
 db.followers = require("../models/followers-model.js")(sequelize, Sequelize);
+db.user_roles = require("../models/user-roles-model.js")(sequelize, Sequelize);
 
 
 db.role.belongsToMany(db.user, {

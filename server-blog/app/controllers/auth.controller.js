@@ -175,7 +175,7 @@ exports.findAllPaginatedForUserList = (req, res) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    User.findAndCountAll({ where: condition, limit, offset })
+    User.findAndCountAll({ where: condition, limit, offset, include: db.role })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
@@ -211,8 +211,7 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
     const id = req.params.id;
-
-    User.findByPk(id)
+    User.findByPk(id, { include: db.role })
         .then(data => {
             res.send(data);
         })
