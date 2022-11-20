@@ -31,6 +31,7 @@ db.appointment = require("../models/appointment-model.js")(sequelize, Sequelize)
 db.timeline = require("../models/timeline-model.js")(sequelize, Sequelize);
 db.followers = require("../models/followers-model.js")(sequelize, Sequelize);
 db.user_roles = require("../models/user-roles-model.js")(sequelize, Sequelize);
+db.likes = require("../models/likes-model.js")(sequelize, Sequelize);
 
 
 db.role.belongsToMany(db.user, {
@@ -75,6 +76,16 @@ db.followers.belongsTo(db.user, {
 db.followers.belongsTo(db.user, {
     through: "followers",
     foreignKey: "followerId",
+});
+
+db.likes.belongsTo(db.post, {
+    through: "likes",
+    foreignKey: "postId",
+});
+
+db.likes.belongsTo(db.user, {
+    through: "likes",
+    foreignKey: "userId",
 });
 
 

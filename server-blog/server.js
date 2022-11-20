@@ -45,6 +45,7 @@ require('./app/routes/appointment.routes')(app);
 require('./app/routes/timeline.routes')(app);
 require('./app/routes/followers.routes')(app);
 require('./app/routes/roles.routes')(app);
+require('./app/routes/likes.routes')(app);
 
 
 function initial() {
