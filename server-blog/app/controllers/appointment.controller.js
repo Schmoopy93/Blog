@@ -3,21 +3,6 @@ const db = require("../models");
 const Appointment = db.appointment;
 const Op = db.Sequelize.Op;
 
-// const getPagination = (page, size) => {
-//     const limit = size ? +size : 6;
-//     const offset = page ? page * limit : 0;
-
-//     return { limit, offset };
-// };
-
-// const getPagingData = (data, page, limit) => {
-//     const { count: totalItems, rows: posts } = data;
-//     const currentPage = page ? +page : 0;
-//     const totalPages = Math.ceil(totalItems / limit);
-
-//     return { totalItems, posts, totalPages, currentPage };
-// };
-
 exports.createAppointment = (req, res) => {
     return Appointment.create({
             title: req.body.title,
@@ -52,27 +37,6 @@ exports.findAll = (req, res) => {
         });
 };
 
-// exports.findAllPagination = (req, res) => {
-//     const { page, size, content } = req.query;
-//     var condition = content ? {
-//         content: {
-//             [Op.like]: `%${content}%`
-//         }
-//     } : null;
-
-//     const { limit, offset } = getPagination(page, size);
-
-//     Appointment.findAndCountAll({ where: condition, limit, offset })
-//         .then(data => {
-//             const response = getPagingData(data, page, limit);
-//             res.send(response);
-//         })
-//         .catch(err => {
-//             res.status(500).send({
-//                 message: err.message || "Some error occurred while retrieving tutorials."
-//             });
-//         });
-// };
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
