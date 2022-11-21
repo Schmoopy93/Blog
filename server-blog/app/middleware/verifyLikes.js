@@ -4,7 +4,8 @@ const Likes = db.likes;
 checkDuplicateLikes = (req, res, next) => {
     Likes.findOne({
         where: {
-            userId: req.body.userId
+            userId: req.body.userId,
+            postId: req.body.postId
         }
     }).then(like => {
         if (like) {

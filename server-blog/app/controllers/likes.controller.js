@@ -46,11 +46,10 @@ exports.findAllLikesPagination = (req, res) => {
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
-            console.log(response, "RES");
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving tutorials."
+                message: err.message || "Some error occurred while retrieving likes."
             });
         });
 };
