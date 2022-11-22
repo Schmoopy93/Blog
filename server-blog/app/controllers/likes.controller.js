@@ -3,16 +3,16 @@ const db = require("../models");
 const Likes = db.likes;
 const Op = db.Sequelize.Op;
 
-const getPagination = (page, size) => {
-    const limit = size ? +size : 6;
-    const offset = page ? page * limit : 0;
+const getPagination = (pageLikes, pageSizeLikes) => {
+    const limit = pageSizeLikes ? +pageSizeLikes : 6;
+    const offset = pageLikes ? pageLikes * limit : 0;
 
     return { limit, offset };
 };
 
-const getPagingData = (data, page, limit) => {
+const getPagingData = (data, pageLikes, limit) => {
     const { count: totalItems, rows: likes } = data;
-    const currentPage = page ? +page : 0;
+    const currentPage = pageLikes ? +pageLikes : 0;
     const totalPages = Math.ceil(totalItems / limit);
 
     return { totalItems, likes, totalPages, currentPage };
@@ -33,18 +33,24 @@ exports.likePost = (req, res) => {
 };
 
 exports.findAllLikesPagination = (req, res) => {
-    const { page, size, postId } = req.query;
+    const { pageLikes, pageSizeLikes, postId, userId } = req.query;
     var condition = postId ? {
         postId: {
             [Op.like]: `%${postId}%`
         }
     } : null;
+    var condition2 = userId ? {
+        userId: {
+            [Op.like]: `%${userId}%`
+        }
+    } : null;
 
-    const { limit, offset } = getPagination(page, size);
-
-    Likes.findAndCountAll({ where: condition, limit, offset, include: db.user })
+    const { limit, offset } = getPagination(pageLikes, pageSizeLikes);
+    console.log(pageLikes, "PAGELIEKS")
+    console.log(pageSizeLikes, "PAGESIZE")
+    Likes.findAndCountAll({ where: [condition, condition2], limit, offset, include: db.user })
         .then(data => {
-            const response = getPagingData(data, page, limit);
+            const response = getPagingData(data, pageLikes, limit);
             res.send(response);
         })
         .catch(err => {
