@@ -46,10 +46,15 @@ exports.findAllLikesPagination = (req, res) => {
     } : null;
 
     const { limit, offset } = getPagination(pageLikes, pageSizeLikes);
-    console.log(pageLikes, "PAGELIEKS")
-    console.log(pageSizeLikes, "PAGESIZE")
-    Likes.findAndCountAll({ where: [condition, condition2], limit, offset, include: db.user })
-        .then(data => {
+    Likes.findAndCountAll({
+            where: [condition, condition2],
+            limit,
+            offset,
+            include: [{
+                model: db.user,
+                as: 'user',
+            }]
+        }).then(data => {
             const response = getPagingData(data, pageLikes, limit);
             res.send(response);
         })
@@ -59,28 +64,3 @@ exports.findAllLikesPagination = (req, res) => {
             });
         });
 };
-
-// exports.getLikes = (req, res) => {
-//     const postId = req.query.postId;
-//     const userId = req.query.userId;
-//     var condition1 = postId ? {
-//         postId: {
-//             [Op.like]: `%${postId}%`
-//         }
-//     } : null;
-//     var condition2 = userId ? {
-//         userId: {
-//             [Op.like]: `%${userId}%`
-//         }
-//     } : null;
-
-//     Likes.findAll({ where: [condition1, condition2], include: db.user })
-//         .then(data => {
-//             res.send(data);
-//         })
-//         .catch(err => {
-//             res.status(500).send({
-//                 message: err.message || "Some error occurred while retrieving comments."
-//             });
-//         });
-// };

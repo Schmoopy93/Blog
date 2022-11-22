@@ -78,14 +78,16 @@ db.followers.belongsTo(db.user, {
     foreignKey: "followerId",
 });
 
+db.post.hasMany(db.likes, { as: "likes" });
 db.likes.belongsTo(db.post, {
-    through: "likes",
     foreignKey: "postId",
+    as: "post",
 });
 
+db.user.hasMany(db.likes, { as: "likes" });
 db.likes.belongsTo(db.user, {
-    through: "likes",
     foreignKey: "userId",
+    as: "user",
 });
 
 
