@@ -1,10 +1,19 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+//Constants for roles that are stored in .env file
+const roleOneID = process.env.ROLE_ONE_ID;
+const roleTwoID = process.env.ROLE_TWO_ID;
+const roleThreeID = process.env.ROLE_THREE_ID;
+
+const roleOne = process.env.ROLE_ONE;
+const roleTwo = process.env.ROLE_TWO;
+const roleThree = process.env.ROLE_THREE;
+
 const app = express();
 global.__basedir = __dirname;
-// app.use(__basedir + "/resources/static/assets/uploads/", express.static('public'))
 
 
 var corsOptions = {
@@ -12,20 +21,13 @@ var corsOptions = {
 };
 
 
+
 app.use('/uploads', express.static(__dirname + '/uploads'));
-
-
 app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
-//app.use(bodyParser.json());
 app.use(bodyParser.json({ limit: '5mb' }));
 app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
-
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// database
 const db = require("./app/models");
 const Role = db.role;
 
@@ -46,22 +48,23 @@ require('./app/routes/timeline.routes')(app);
 require('./app/routes/followers.routes')(app);
 require('./app/routes/roles.routes')(app);
 require('./app/routes/likes.routes')(app);
+require('./app/routes/likes-timeline.routes')(app);
 
 
 function initial() {
     Role.create({
-        id: 1,
-        name: "user"
+        id: roleOneID,
+        name: roleOne
     });
 
     Role.create({
-        id: 2,
-        name: "moderator"
+        id: roleTwoID,
+        name: roleTwo
     });
 
     Role.create({
-        id: 3,
-        name: "admin"
+        id: roleThreeID,
+        name: roleThree
     });
 }
 
