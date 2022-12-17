@@ -2,6 +2,7 @@ const req = require("express/lib/request");
 const db = require("../models");
 const Timeline = db.timeline;
 const Op = db.Sequelize.Op;
+const timelineControllerLikes = require("../controllers/likes-timeline.controller");
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 6;
@@ -17,6 +18,16 @@ const getPagingData = (data, page, limit) => {
 
     return { totalItems, timelines, totalPages, currentPage };
 };
+
+
+// const getPagingData = (data, page, limit) => {
+//     const { rows: timelines } = data;
+//     const totalItems = data.rows.length;
+//     const currentPage = page ? +page : 0;
+//     const totalPages = Math.ceil(totalItems / limit);
+
+//     return { totalItems, timelines, totalPages, currentPage };
+// };
 
 exports.createTimeline = (req, res) => {
     return Timeline.create({
@@ -62,7 +73,15 @@ exports.findAllPagination = (req, res) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    Timeline.findAndCountAll({ where: condition, limit, offset })
+    Timeline.findAndCountAll({
+            where: condition,
+            limit,
+            offset,
+            include: [{
+                model: db.likes_timeline,
+                as: 'likesTimeline',
+            }]
+        })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
