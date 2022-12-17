@@ -62,7 +62,6 @@ exports.findAllLikesTimelinePagination = (req, res) => {
         }).then(data => {
             const response = getPagingData(data, pageLikes, limit);
             res.send(response);
-            console.log(response, "RESPONSE")
         })
         .catch(err => {
             res.status(500).send({

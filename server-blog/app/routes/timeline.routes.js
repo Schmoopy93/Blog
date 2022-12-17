@@ -14,5 +14,5 @@ module.exports = function(app) {
     app.get('/api/auth/showAllPaginatedTimelines', controller.findAllPagination);
     app.get("/api/auth/showTimelines/:id", controller.findOne);
     app.delete("/api/auth/deleteTimelines/:id", controller.delete);
-    app.put("/api/auth/timelines/:id", controller.update);
+    app.put("/api/auth/editTimelines/:id", controller.update);
 }
