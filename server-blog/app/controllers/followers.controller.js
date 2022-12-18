@@ -3,6 +3,21 @@ const db = require("../models");
 const Followers = db.followers;
 const Op = db.Sequelize.Op;
 
+const getPagination = (page, size) => {
+    const limit = size ? +size : 6;
+    const offset = page ? page * limit : 0;
+
+    return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: followers } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return { totalItems, followers, totalPages, currentPage };
+};
+
 exports.follow = (req, res) => {
     try {
         Followers.create({
@@ -60,6 +75,28 @@ exports.unfollow = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message: "Could not delete Following with id=" + id
+            });
+        });
+};
+
+exports.findMyFriends = (req, res) => {
+    const { userId, page, size } = req.query;
+    var condition = userId ? {
+        userId: {
+            [Op.like]: `%${userId}%`
+        }
+    } : null;
+
+    const { limit, offset } = getPagination(page, size);
+
+    Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
+        .then(data => {
+            const response = getPagingData(data, page, limit);
+            res.send(response);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving followers."
             });
         });
 };
