@@ -79,7 +79,7 @@ exports.unfollow = (req, res) => {
         });
 };
 
-exports.findMyFriends = (req, res) => {
+exports.friendList = (req, res) => {
     const { userId, page, size } = req.query;
     var condition = userId ? {
         userId: {
