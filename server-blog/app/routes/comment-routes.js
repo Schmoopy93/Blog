@@ -14,4 +14,5 @@ module.exports = function(app) {
     app.get('/api/auth/showAllPaginatedComments', controller.findAllPagination);
     app.get("/api/auth/showComments/:id", controller.findOne);
     app.delete("/api/auth/showComments/:id", controller.delete);
+    app.put("/api/auth/editComment/:id", controller.update);
 }

@@ -87,6 +87,30 @@ exports.findOne = (req, res) => {
         });
 };
 
+exports.update = (req, res) => {
+    const id = req.params.id;
+
+    Comment.update(req.body, {
+            where: { id: id }
+        })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Comment was updated successfully."
+                });
+            } else {
+                res.send({
+                    message: `Cannot update Comment with id=${id}. Maybe Comment was not found or req.body is empty!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error updating Comment with id=" + id
+            });
+        });
+};
+
 exports.delete = (req, res) => {
     const id = req.params.id;
 
