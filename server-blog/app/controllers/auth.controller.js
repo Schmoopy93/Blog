@@ -202,13 +202,9 @@ exports.findAll = (req, res) => {
     } : null;
 
     const { limit, offset } = getPagination(page, size);
-
-    console.log(id, "userID")
-
     User.findAndCountAll({ where: [condition || condition2], limit, offset, include: [db.followers] })
         .then(data => {
             const response = getPagingData(data, page, limit);
-            console.log(response, 'res')
             res.send(response);
         })
         .catch(err => {
