@@ -182,36 +182,45 @@ exports.findAllPaginatedForUserList = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving tutorials."
+                message: err.message || "Some error occurred while retrieving users."
             });
         });
 };
 
 exports.findAll = (req, res) => {
-    const { firstname, page, size } = req.query;
+    const { firstname, page, size, id } = req.query;
     var condition = firstname ? {
         firstname: {
             [Op.like]: `%${firstname}%`
         }
     } : null;
 
+    var condition2 = id ? {
+        id: {
+            [Op.notLike]: `%${id}%`
+        }
+    } : null;
+
     const { limit, offset } = getPagination(page, size);
 
-    User.findAndCountAll({ where: condition, limit, offset, include: [db.followers] })
+    console.log(id, "userID")
+
+    User.findAndCountAll({ where: [condition || condition2], limit, offset, include: [db.followers] })
         .then(data => {
             const response = getPagingData(data, page, limit);
+            console.log(response, 'res')
             res.send(response);
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving tutorials."
+                message: err.message || "Some error occurred while retrieving users."
             });
         });
 };
 
 exports.findOne = (req, res) => {
     const id = req.params.id;
-    User.findByPk(id, { include: db.role })
+    User.findByPk(id, { include: [db.role, db.followers] })
         .then(data => {
             res.send(data);
         })
