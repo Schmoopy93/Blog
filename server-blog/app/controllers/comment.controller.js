@@ -13,6 +13,9 @@ const getPagination = (page, size) => {
 const getPagingData = (data, page, limit) => {
     const { count: totalItems, rows: comments } = data;
     const currentPage = page ? +page : 0;
+    comments.sort(function(a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
     const totalPages = Math.ceil(totalItems / limit);
 
     return { totalItems, comments, totalPages, currentPage };
@@ -69,7 +72,7 @@ exports.findAllPagination = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving tutorials."
+                message: err.message || "Some error occurred while retrieving comments."
             });
         });
 };
