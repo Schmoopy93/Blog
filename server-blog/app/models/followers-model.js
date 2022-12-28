@@ -20,6 +20,15 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.ENUM('Requested', 'Following'),
             defaultValue: 'Requested'
         },
+
+        message: {
+            type: Sequelize.TEXT
+        },
+
+        indicator: {
+            type: Sequelize.INTEGER,
+            defaultValue: 1
+        }
     }, {
         freezeTableName: true
     });

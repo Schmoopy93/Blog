@@ -13,4 +13,6 @@ module.exports = function(app) {
     app.get('/api/auth/followRequest', controller.following);
     app.delete("/api/auth/unfollow/:id", controller.unfollow);
     app.get("/api/auth/getFollowers", controller.friendList);
+    app.get("/api/auth/notifications", controller.notifications);
+    app.get("/api/auth/acceptFriendship/:id", controller.acceptFriendship);
 }

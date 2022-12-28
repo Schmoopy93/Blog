@@ -23,6 +23,7 @@ exports.follow = (req, res) => {
         Followers.create({
             userId: req.body.userId,
             followerId: req.body.followerId,
+            message: req.body.message
         });
     } catch (error) {
         console.log(error);
@@ -50,7 +51,7 @@ exports.following = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving comments."
+                message: err.message || "Some error occurred while retrieving followers."
             });
         });
 };
@@ -99,4 +100,52 @@ exports.friendList = (req, res) => {
                 message: err.message || "Some error occurred while retrieving followers."
             });
         });
+};
+
+exports.notifications = (req, res) => {
+    const { followerId, page, size } = req.query;
+    var condition = followerId ? {
+        followerId: {
+            [Op.like]: `%${followerId}%`
+        }
+    } : null;
+
+    console.log(followerId, 'followerId')
+
+    const { limit, offset } = getPagination(page, size);
+
+    Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
+        .then(data => {
+            const response = getPagingData(data, page, limit);
+            res.send(response);
+            console.log(response)
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving followers."
+            });
+        });
+};
+
+exports.acceptFriendship = (req, res, next) => {
+    Followers.findOne({
+            where: {
+                id: req.params.id
+            }
+        })
+        .then((follower) => {
+            console.log(follower);
+            if (!follower) {
+                return res.status(404).send({ message: "Follower Not found." });
+            }
+            follower.status = "Following";
+            follower.message = "";
+            follower.save((err) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+            });
+        })
+        .catch((e) => console.log("error", e));
 };
