@@ -300,21 +300,20 @@ exports.retrievePassowrd = (req, res) => {
 exports.newPassword = (req, res) => {
     const newPassword = req.body.password
     const sentToken = req.body.token
-        // User.findOne({ where: { resetToken: sentToken, expireToken: { $gt: Date.now() } } })
     User.findOne({ where: { resetToken: sentToken } })
         .then(user => {
-
             if (!user) {
                 return res.status(422).send({ error: "Try again session expired" })
             }
             bcrypt.hash(newPassword, 12).then(hashedpassword => {
                 user.password = hashedpassword
-                user.resetToken = undefined
+                user.resetToken = "";
                 user.expireToken = undefined
                 user.save().then((saveduser) => {
                     return res.status(404).send({ message: "Password updated success" })
                 })
-            })
+            });
+
         }).catch(err => {
             console.log(err)
         })
