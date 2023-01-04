@@ -110,15 +110,12 @@ exports.notifications = (req, res) => {
         }
     } : null;
 
-    console.log(followerId, 'followerId')
-
     const { limit, offset } = getPagination(page, size);
 
     Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
-            console.log(response)
         })
         .catch(err => {
             res.status(500).send({
@@ -134,7 +131,7 @@ exports.acceptFriendship = (req, res, next) => {
             }
         })
         .then((follower) => {
-            console.log(follower);
+
             if (!follower) {
                 return res.status(404).send({ message: "Follower Not found." });
             }
