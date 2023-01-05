@@ -33,6 +33,7 @@ db.followers = require("../models/followers-model.js")(sequelize, Sequelize);
 db.user_roles = require("../models/user-roles-model.js")(sequelize, Sequelize);
 db.likes = require("../models/likes-model.js")(sequelize, Sequelize);
 db.likes_timeline = require("../models/likes-timeline-model.js")(sequelize, Sequelize);
+db.photo_gallery = require("../models/photogallery-model.js")(sequelize, Sequelize);
 
 
 db.role.belongsToMany(db.user, {
@@ -56,6 +57,12 @@ db.comment.belongsTo(db.post, {
     foreignKey: "postId",
     as: "post",
 });
+
+db.photo_gallery.belongsTo(db.user, {
+    through: "photogallery",
+    foreignKey: "userId",
+});
+
 
 db.user.hasMany(db.comment);
 db.comment.belongsTo(db.user);
