@@ -33,23 +33,7 @@ exports.likeTimeline = (req, res) => {
 };
 
 exports.findAllLikesTimelinePagination = (req, res) => {
-    const { pageLikes, pageSizeLikes, timelineId, userId } = req.query;
-    var condition = timelineId ? {
-        timelineId: {
-            [Op.like]: `%${timelineId}%`
-        }
-    } : null;
-    var condition2 = userId ? {
-        userId: {
-            [Op.like]: `%${userId}%`
-        }
-    } : null;
-
-    const { limit, offset } = getPagination(pageLikes, pageSizeLikes);
-    LikesTimeline.findAndCountAll({
-            where: [condition, condition2],
-            limit,
-            offset,
+    LikesTimeline.findAll({
             include: [{
                     model: db.user,
                     as: 'user',
@@ -59,13 +43,51 @@ exports.findAllLikesTimelinePagination = (req, res) => {
                     as: 'timeline',
                 }
             ]
-        }).then(data => {
-            const response = getPagingData(data, pageLikes, limit);
-            res.send(response);
+        })
+        .then(data => {
+            res.send(data);
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving likes for timeline."
+                message: err.message || "Some error occurred while retrieving tutorials."
             });
         });
 };
+// exports.findAllLikesTimelinePagination = (req, res) => {
+//     const { pageLikes, pageSizeLikes, timelineId, userId } = req.query;
+//     var condition = timelineId ? {
+//         timelineId: {
+//             [Op.like]: `%${timelineId}%`
+//         }
+//     } : null;
+//     var condition2 = userId ? {
+//         userId: {
+//             [Op.like]: `%${userId}%`
+//         }
+//     } : null;
+
+//     const { limit, offset } = getPagination(pageLikes, pageSizeLikes);
+//     LikesTimeline.findAndCountAll({
+//             where: [condition, condition2],
+//             limit,
+//             offset,
+//             include: [{
+//                     model: db.user,
+//                     as: 'user',
+//                 },
+//                 {
+//                     model: db.timeline,
+//                     as: 'timeline',
+//                 }
+//             ]
+//         }).then(data => {
+//             const response = getPagingData(data, pageLikes, limit);
+//             console.log(response);
+//             res.send(response);
+//         })
+//         .catch(err => {
+//             res.status(500).send({
+//                 message: err.message || "Some error occurred while retrieving likes for timeline."
+//             });
+//         });
+// };
