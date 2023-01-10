@@ -20,15 +20,6 @@ const getPagingData = (data, page, limit) => {
 };
 
 
-// const getPagingData = (data, page, limit) => {
-//     const { rows: timelines } = data;
-//     const totalItems = data.rows.length;
-//     const currentPage = page ? +page : 0;
-//     const totalPages = Math.ceil(totalItems / limit);
-
-//     return { totalItems, timelines, totalPages, currentPage };
-// };
-
 exports.createTimeline = (req, res) => {
     return Timeline.create({
             text: req.body.text,
@@ -80,6 +71,7 @@ exports.findAllPagination = (req, res) => {
             include: [{
                 model: db.likes_timeline,
                 as: 'likesTimeline',
+                separate: true,
             }]
         })
         .then(data => {
@@ -89,7 +81,7 @@ exports.findAllPagination = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving tutorials."
+                message: err.message || "Some error occurred while retrieving timelines."
             });
         });
 };
