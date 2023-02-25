@@ -60,7 +60,14 @@ exports.findAll = (req, res) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    Post.findAndCountAll({ where: condition, limit, offset })
+    Post.findAndCountAll({
+            where: condition,
+            limit,
+            order: [
+                ['id', 'DESC']
+            ],
+            offset
+        })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);
@@ -147,6 +154,35 @@ exports.deleteAll = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message: err.message || "Some error occurred while removing all Posts."
+            });
+        });
+};
+
+exports.findAllForHomePageMax3 = (req, res) => {
+    const { page, size, title } = req.query;
+    var condition = title ? {
+        title: {
+            [Op.like]: `%${title}%`
+        }
+    } : null;
+
+    const { limit, offset } = getPagination(page, size);
+
+    Post.findAndCountAll({
+            where: condition,
+            limit: 3,
+            order: [
+                ['id', 'DESC']
+            ],
+            offset
+        })
+        .then(data => {
+            const response = getPagingData(data, page, limit);
+            res.send(response);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving posts."
             });
         });
 };

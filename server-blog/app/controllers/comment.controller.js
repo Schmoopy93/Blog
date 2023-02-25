@@ -13,9 +13,6 @@ const getPagination = (page, size) => {
 const getPagingData = (data, page, limit) => {
     const { count: totalItems, rows: comments } = data;
     const currentPage = page ? +page : 0;
-    comments.sort(function(a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-    });
     const totalPages = Math.ceil(totalItems / limit);
 
     return { totalItems, comments, totalPages, currentPage };
@@ -65,7 +62,15 @@ exports.findAllPagination = (req, res) => {
 
     const { limit, offset } = getPagination(page, size);
 
-    Comment.findAndCountAll({ where: condition, limit, offset, include: db.user })
+    Comment.findAndCountAll({
+            where: condition,
+            limit,
+            offset,
+            include: db.user,
+            order: [
+                ['id', 'DESC']
+            ]
+        })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);

@@ -58,7 +58,14 @@ exports.findAllGallery = (req, res) => {
     } : null;
 
     const { limit, offset } = getPagination(page, size);
-    PhotoGallery.findAndCountAll({ where: condition, limit, offset })
+    PhotoGallery.findAndCountAll({
+            where: condition,
+            limit,
+            order: [
+                ['id', 'DESC']
+            ],
+            offset
+        })
         .then(data => {
             const response = getPagingData(data, page, limit);
             res.send(response);

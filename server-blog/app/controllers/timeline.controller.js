@@ -68,6 +68,9 @@ exports.findAllPagination = (req, res) => {
             where: condition,
             limit,
             offset,
+            order: [
+                ['id', 'DESC']
+            ],
             include: [{
                 model: db.likes_timeline,
                 as: 'likesTimeline',
