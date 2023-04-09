@@ -22,7 +22,9 @@ module.exports = function(sequelize, Sequelize) {
         },
 
         message: {
-            type: Sequelize.TEXT
+            type: Sequelize.TEXT,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
 
         indicator: {
