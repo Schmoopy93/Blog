@@ -6,7 +6,9 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true,
         },
         title: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         start: {
             type: Sequelize.STRING,

@@ -6,19 +6,29 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: Sequelize.UUIDV4,
         },
         username: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         email: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         password: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         firstname: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         lastname: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         status: {
             type: Sequelize.ENUM('Active', 'Pending'),
@@ -38,13 +48,17 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.BLOB("long"),
         },
         address: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         phone: {
             type: Sequelize.STRING
         },
         town: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         },
         resetToken: {
             type: Sequelize.STRING
