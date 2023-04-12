@@ -50,6 +50,7 @@ require('./app/routes/roles.routes')(app);
 require('./app/routes/likes.routes')(app);
 require('./app/routes/likes-timeline.routes')(app);
 require('./app/routes/photogallery.routes')(app);
+require('./app/routes/category.routes')(app);
 
 function initial() {
     Role.create({

@@ -32,9 +32,11 @@ exports.createPost = (req, res) => {
             type: req.file.mimetype,
             name: req.file.originalname,
             userId: req.body.userId,
+            categoryId: req.body.categoryId,
             data: fs.readFileSync(
                 __basedir + "/uploads/" + req.file.filename
             ),
+
         }).then((post) => {
             fs.writeFileSync(
                 __basedir + "/uploads/" + post.name,
@@ -50,11 +52,13 @@ exports.createPost = (req, res) => {
     }
 };
 
+
 exports.findAll = (req, res) => {
-    const { page, size, title } = req.query;
-    var condition = title ? {
-        title: {
-            [Op.like]: `%${title}%`
+    const { page, size, categoryId } = req.query;
+
+    var condition = categoryId ? {
+        categoryId: {
+            [Op.like]: `%${categoryId}%`
         }
     } : null;
 
@@ -66,7 +70,8 @@ exports.findAll = (req, res) => {
             order: [
                 ['id', 'DESC']
             ],
-            offset
+            offset,
+            include: db.category
         })
         .then(data => {
             const response = getPagingData(data, page, limit);
