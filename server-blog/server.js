@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { sendEmail } = require('./app/config/nodemailer.contractform.config.js');
 
 //Constants for roles that are stored in .env file
 const roleOneID = process.env.ROLE_ONE_ID;
@@ -31,12 +32,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const db = require("./app/models");
 const Role = db.role;
 
-db.sequelize.sync();
-// db.sequelize.sync({ force: true }).then(() => {
-//     console.log('Drop and Resync Database with { force: true }');
-
-// });
-// initial();
+db.sequelize.sync()
+    // db.sequelize.sync({ force: true }).then(() => {
+    //     console.log('Drop and Resync Database with { force: true }');
+    // });
+    // initial();
 
 // routes
 require('./app/routes/auth.routes')(app);
@@ -68,6 +68,18 @@ function initial() {
         name: roleThree
     });
 }
+
+app.post('/api/auth/send-email', async(req, res) => {
+    const { name, email, message } = req.body;
+
+    try {
+        const info = await sendEmail(name, email, message);
+        res.status(200).send({ message: "Email sent" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred while sending the email');
+    }
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
