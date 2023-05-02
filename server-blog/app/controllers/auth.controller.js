@@ -39,12 +39,17 @@ exports.signup = (req, res) => {
         return res.send(`You must select a file.`);
     }
 
+    if (req.body.password !== req.body.repeatPassword) {
+        return res.status(422).send({ error: "Passwords do not match" });
+    }
+
     User.create({
         username: req.body.username,
         email: req.body.email,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         password: bcrypt.hashSync(req.body.password, 8),
+        repeatPassword: bcrypt.hashSync(req.body.repeatPassword, 8),
         confirmationCode: token,
         type: req.file.mimetype,
         photoName: photoName,
@@ -298,23 +303,27 @@ exports.retrievePassowrd = (req, res) => {
 }
 
 exports.newPassword = (req, res) => {
-    const newPassword = req.body.password
-    const sentToken = req.body.token
+    const newPassword = req.body.password;
+    const repeatPassword = req.body.repeatPassword;
+    const sentToken = req.body.token;
     User.findOne({ where: { resetToken: sentToken } })
-        .then(user => {
+        .then((user) => {
             if (!user) {
-                return res.status(422).send({ error: "Try again session expired" })
+                return res.status(422).send({ error: "Try again session expired" });
             }
-            bcrypt.hash(newPassword, 12).then(hashedpassword => {
-                user.password = hashedpassword
+            if (newPassword !== repeatPassword) {
+                return res.status(422).send({ error: "Passwords do not match" });
+            }
+            bcrypt.hash(newPassword, 12).then((hashedpassword) => {
+                user.password = hashedpassword;
                 user.resetToken = "";
-                user.expireToken = undefined
+                user.expireToken = undefined;
                 user.save().then((saveduser) => {
-                    return res.status(404).send({ message: "Password updated success" })
-                })
+                    return res.status(404).send({ message: "Password updated success" });
+                });
             });
-
-        }).catch(err => {
-            console.log(err)
         })
-}
+        .catch((err) => {
+            console.log(err);
+        });
+};
