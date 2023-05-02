@@ -87,7 +87,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
-    Post.findByPk(id, { include: db.user })
+    Post.findByPk(id, { include: [db.user, db.category] })
         .then(data => {
             res.send(data);
         })
@@ -102,6 +102,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     Post.update(req.body, {
+
             where: { id: id }
         })
         .then(num => {
