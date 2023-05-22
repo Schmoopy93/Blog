@@ -1,7 +1,9 @@
 const { verifySignUp } = require("../middleware");
 const controller = require("../controllers/auth.controller");
 let upload = require('../config/userphoto-multer.config');
-
+const { generatePDF } = require('../controllers/auth.controller.js');
+const fs = require('fs');
+const { Readable } = require('stream');
 module.exports = function(app) {
     app.use(function(req, res, next) {
         res.header(
@@ -24,5 +26,14 @@ module.exports = function(app) {
     app.delete('/api/auth/users/:id', controller.delete);
     app.post('/api/auth/users/retrieve-password', controller.retrievePassowrd);
     app.post('/api/auth/users/new-password', controller.newPassword);
+    app.get('/generate-pdf', async(req, res) => {
+        // Generate the PDF file
+        const filePath = await generatePDF();
 
+        // Stream the file to the client
+        const fileStream = fs.createReadStream(filePath);
+        const readableStream = new Readable().wrap(fileStream);
+        res.set('Content-Type', 'application/pdf');
+        readableStream.pipe(res);
+    });
 };

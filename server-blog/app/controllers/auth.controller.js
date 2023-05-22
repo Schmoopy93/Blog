@@ -10,6 +10,7 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var crypto = require("crypto");
 const fs = require("fs");
+const PDFDocument = require('pdfkit');
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;
@@ -327,3 +328,36 @@ exports.newPassword = (req, res) => {
             console.log(err);
         });
 };
+exports.generatePDF = async() => {
+    try {
+        // Retrieve all users from the database
+        const users = await User.findAll();
+
+        // Create a new PDF document
+        const doc = new PDFDocument();
+
+        doc.fontSize(16);
+        doc.font('Helvetica-Bold');
+        // Write the user information to the PDF document
+        users.forEach(user => {
+            doc.text(`Firstname: ${user.firstname}`);
+            doc.text(`Lastname: ${user.lastname}`);
+            doc.text(`Email: ${user.email}`);
+            doc.text(`Status: ${user.status}`);
+            doc.moveDown();
+            console.log(user, 'USER')
+        });
+
+        // Save the PDF document to a file
+        const filePath = `./user-list.pdf`;
+        const stream = fs.createWriteStream(filePath);
+        doc.pipe(stream);
+        doc.end();
+
+        // Return the file path of the generated PDF document
+        return filePath;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to generate PDF');
+    }
+}
