@@ -11,6 +11,7 @@ var bcrypt = require("bcryptjs");
 var crypto = require("crypto");
 const fs = require("fs");
 const PDFDocument = require('pdfkit');
+const path = require('path');
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;
@@ -360,4 +361,75 @@ exports.generatePDF = async() => {
         console.error(error);
         throw new Error('Failed to generate PDF');
     }
+
 }
+
+exports.changeProfilePicture = (req, res) => {
+    try {
+        console.log(req.file);
+
+        if (req.file == undefined) {
+            return res.send(`You must select a file.`);
+        }
+        User.update({
+            type: req.file.mimetype,
+            name: req.file.originalname,
+            userId: req.body.userId,
+            data: fs.readFileSync(
+                __basedir + "/uploads/userphoto/" + req.file.filename
+            ),
+
+        }).then((user) => {
+            fs.writeFileSync(
+                __basedir + "/uploads/userphoto/" + user.name,
+                user.data
+            );
+
+
+            return res.send(`File has been uploaded.`);
+        });
+    } catch (error) {
+        console.log(error);
+        return res.send(`Error when trying upload posts: ${error}`);
+    }
+};
+
+exports.changeProfilePicture = async(req, res) => {
+    try {
+        console.log(req.file);
+
+        if (req.file === undefined) {
+            return res.status(400).send('You must select a file.');
+        }
+
+        const userId = req.body.userId;
+        const user = await User.findOne({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
+
+        const { mimetype, originalname, filename } = req.file;
+
+        const data = fs.readFileSync(req.file.path);
+        var photoNameEncrypted = crypto.randomBytes(20).toString('hex');
+        user.data = data;
+        user.type = mimetype;
+        user.photoName = photoNameEncrypted;
+
+        await user.save();
+
+        const targetDirectory = path.join(__basedir, 'uploads/userphoto');
+        const targetPath = path.join(targetDirectory, user.photoName);
+        fs.writeFileSync(targetPath, user.data);
+
+        fs.unlinkSync(req.file.path);
+
+        return res.status(200).send('Profile picture has been updated.');
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(`Error when trying to update profile picture: ${error}`);
+    }
+};

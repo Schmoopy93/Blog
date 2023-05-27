@@ -26,11 +26,9 @@ module.exports = function(app) {
     app.delete('/api/auth/users/:id', controller.delete);
     app.post('/api/auth/users/retrieve-password', controller.retrievePassowrd);
     app.post('/api/auth/users/new-password', controller.newPassword);
+    app.put('/api/auth/changeProfilePicture/upload', upload.single("file"), controller.changeProfilePicture);
     app.get('/generate-pdf', async(req, res) => {
-        // Generate the PDF file
         const filePath = await generatePDF();
-
-        // Stream the file to the client
         const fileStream = fs.createReadStream(filePath);
         const readableStream = new Readable().wrap(fileStream);
         res.set('Content-Type', 'application/pdf');
