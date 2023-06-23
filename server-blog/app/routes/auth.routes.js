@@ -27,11 +27,33 @@ module.exports = function(app) {
     app.post('/api/auth/users/retrieve-password', controller.retrievePassowrd);
     app.post('/api/auth/users/new-password', controller.newPassword);
     app.put('/api/auth/changeProfilePicture/upload', upload.single("file"), controller.changeProfilePicture);
+    // app.get('/generate-pdf', async(req, res) => {
+    //     const filePath = await generatePDF();
+    //     const fileStream = fs.createReadStream(filePath);
+    //     const readableStream = new Readable().wrap(fileStream);
+    //     res.set('Content-Type', 'application/pdf');
+    //     readableStream.pipe(res);
+    // });
     app.get('/generate-pdf', async(req, res) => {
-        const filePath = await generatePDF();
-        const fileStream = fs.createReadStream(filePath);
-        const readableStream = new Readable().wrap(fileStream);
-        res.set('Content-Type', 'application/pdf');
-        readableStream.pipe(res);
+        try {
+            res.set('Cache-Control', 'no-store');
+            res.set('Pragma', 'no-cache');
+            const filePath = await generatePDF();
+            const fileStream = fs.createReadStream(filePath);
+            if (fs.existsSync(filePath)) {
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error('Failed to delete file:', err);
+                    } else {
+                        console.log('File deleted successfully');
+                    }
+                });
+            }
+            res.setHeader('Content-Type', 'application/pdf;');
+            fileStream.pipe(res);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Failed to generate PDF');
+        }
     });
 };

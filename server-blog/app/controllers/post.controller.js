@@ -1,5 +1,6 @@
 const db = require("../models");
 const Post = db.post;
+const User = db.user;
 const fs = require("fs");
 const Op = db.Sequelize.Op;
 const pdfMake = require('pdfmake');
@@ -203,6 +204,14 @@ exports.generatePDFPostById = async(postId) => {
             throw new Error('Post not found');
         }
 
+        const user = await User.findByPk(post.userId);
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const author = { text: `Author: ${user.firstname + " " + user.lastname}`, style: 'author' };
+
         const fonts = {
             Roboto: {
                 normal: path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf'),
@@ -211,9 +220,12 @@ exports.generatePDFPostById = async(postId) => {
                 bolditalics: path.join(process.cwd(), 'fonts', 'Roboto-BoldItalic.ttf'),
             },
         };
+
         const docDefinition = {
             content: [
                 { image: post.data, width: 500 },
+                '\n',
+                author,
                 '\n\n\n',
                 { text: post.title, style: 'header' },
                 '\n\n\n',
@@ -222,6 +234,7 @@ exports.generatePDFPostById = async(postId) => {
             styles: {
                 header: { fontSize: 26, bold: true, alignment: 'center' },
                 content: { fontSize: 16 },
+                author: { fontSize: 14, italics: true, alignment: 'left' },
             },
             defaultStyle: { font: 'Roboto' },
             pageMargins: [40, 40, 40, 40],

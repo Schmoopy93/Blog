@@ -10,8 +10,10 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var crypto = require("crypto");
 const fs = require("fs");
-const PDFDocument = require('pdfkit');
 const path = require('path');
+const pdfMake = require('pdfmake');
+const moment = require('moment');
+
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;
@@ -329,40 +331,84 @@ exports.newPassword = (req, res) => {
             console.log(err);
         });
 };
+
 exports.generatePDF = async() => {
     try {
-        // Retrieve all users from the database
         const users = await User.findAll();
 
-        // Create a new PDF document
-        const doc = new PDFDocument();
+        if (!users || users.length === 0) {
+            throw new Error('Users not found');
+        }
 
-        doc.fontSize(16);
-        doc.font('Helvetica-Bold');
-        // Write the user information to the PDF document
-        users.forEach(user => {
-            doc.text(`Firstname: ${user.firstname}`);
-            doc.text(`Lastname: ${user.lastname}`);
-            doc.text(`Email: ${user.email}`);
-            doc.text(`Status: ${user.status}`);
-            doc.moveDown();
-            console.log(user, 'USER')
-        });
+        const fonts = {
+            Roboto: {
+                normal: path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf'),
+                bold: path.join(process.cwd(), 'fonts', 'Roboto-Bold.ttf'),
+                italics: path.join(process.cwd(), 'fonts', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(process.cwd(), 'fonts', 'Roboto-BoldItalic.ttf'),
+            },
+        };
 
-        // Save the PDF document to a file
+        const tableContent = [
+            [
+                { text: 'Avatar', style: 'tableHeader' },
+                { text: 'Korisničko ime', style: 'tableHeader' },
+                { text: 'Ime', style: 'tableHeader' },
+                { text: 'Prezime', style: 'tableHeader' },
+                { text: 'Email', style: 'tableHeader' },
+                { text: 'Status', style: 'tableHeader' },
+                { text: 'Datum registracije', style: 'tableHeader' },
+            ],
+            ...users.map((user) => [{
+                    image: user.data,
+                    fit: [40, 40],
+                    alignment: 'center',
+                    style: 'tableImage',
+                },
+                { text: user.username, style: 'tableCell' },
+                { text: user.firstname, style: 'tableCell' },
+                { text: user.lastname, style: 'tableCell' },
+                { text: user.email, style: 'tableCell' },
+                { text: user.status, style: 'tableCell' },
+                { text: moment(user.createdAt).format('DD.MM.YYYY'), style: 'tableCell' },
+            ]),
+        ];
+
+        const docDefinition = {
+            content: [
+                { text: 'Lista korisnika', style: 'header' },
+                { table: { body: tableContent }, style: 'table' },
+            ],
+            styles: {
+                header: { fontSize: 26, bold: true, alignment: 'center' },
+                table: { margin: [0, 10, 0, 10] },
+                tableHeader: { fontSize: 14, bold: true, fillColor: '#dddddd' },
+                tableCell: { fontSize: 12, bold: true },
+                tableImage: {
+                    borderRadius: 5,
+                    decoration: 'rounded',
+                },
+            },
+            defaultStyle: { font: 'Roboto' },
+            pageMargins: [40, 40, 40, 40],
+        };
+
+        const printer = new pdfMake(fonts);
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
         const filePath = `./user-list.pdf`;
-        const stream = fs.createWriteStream(filePath);
-        doc.pipe(stream);
-        doc.end();
 
-        // Return the file path of the generated PDF document
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        pdfDoc.pipe(fs.createWriteStream(filePath));
+        pdfDoc.end();
+
         return filePath;
     } catch (error) {
         console.error(error);
         throw new Error('Failed to generate PDF');
     }
+};
 
-}
 
 exports.changeProfilePicture = (req, res) => {
     try {
