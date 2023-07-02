@@ -18,16 +18,35 @@ const getPagingData = (data, page, limit) => {
     return { totalItems, followers, totalPages, currentPage };
 };
 
-exports.follow = (req, res) => {
+let socket; // Initialize a variable to store the io object
+
+exports.setIO = (socketIO) => {
+    socket = socketIO;
+};
+
+exports.follow = async(req, res, io) => {
     try {
-        Followers.create({
+        const follower = await Followers.create({
             userId: req.body.userId,
             followerId: req.body.followerId,
-            message: req.body.message
+            message: req.body.message,
+        });
+        if (socket) {
+            socket.emit('followerCreated', follower);
+            socket.emit('notifications', follower);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Follower created successfully',
+            data: follower,
         });
     } catch (error) {
         console.log(error);
-        return res.send(`Error when trying upload followers: ${error}`);
+        return res.status(500).json({
+            success: false,
+            message: `Error when trying to create follower: ${error}`,
+        });
     }
 };
 
@@ -102,27 +121,56 @@ exports.friendList = (req, res) => {
         });
 };
 
-exports.notifications = (req, res) => {
+// exports.notifications = (req, res) => {
+//     const { followerId, page, size } = req.query;
+//     var condition = followerId ? {
+//         followerId: {
+//             [Op.like]: `%${followerId}%`
+//         }
+//     } : null;
+
+//     const { limit, offset } = getPagination(page, size);
+
+//     Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
+//         .then(data => {
+//             const response = getPagingData(data, page, limit);
+//             res.send(response);
+//         })
+//         .catch(err => {
+//             res.status(500).send({
+//                 message: err.message || "Some error occurred while retrieving followers."
+//             });
+//         });
+// };
+
+exports.notifications = (req, res, io) => {
     const { followerId, page, size } = req.query;
     var condition = followerId ? {
         followerId: {
-            [Op.like]: `%${followerId}%`
-        }
+            [Op.like]: `%${followerId}%`,
+        },
     } : null;
 
     const { limit, offset } = getPagination(page, size);
 
-    Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
-        .then(data => {
+    Followers.findAndCountAll({
+            where: condition,
+            limit,
+            offset,
+            //include: [db.user],
+        })
+        .then((data) => {
             const response = getPagingData(data, page, limit);
             res.send(response);
         })
-        .catch(err => {
+        .catch((err) => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving followers."
+                message: err.message || "Some error occurred while retrieving followers.",
             });
         });
 };
+
+
 
 exports.acceptFriendship = (req, res, next) => {
     Followers.findOne({

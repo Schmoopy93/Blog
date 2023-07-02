@@ -1,10 +1,12 @@
 require("dotenv").config();
 const express = require("express");
+const http = require("http");
+const socketIO = require("socket.io");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { sendEmail } = require('./app/config/nodemailer.contractform.config.js');
 
-//Constants for roles that are stored in .env file
+// Constants for roles that are stored in .env file
 const roleOneID = process.env.ROLE_ONE_ID;
 const roleTwoID = process.env.ROLE_TWO_ID;
 const roleThreeID = process.env.ROLE_THREE_ID;
@@ -14,14 +16,21 @@ const roleTwo = process.env.ROLE_TWO;
 const roleThree = process.env.ROLE_THREE;
 
 const app = express();
-global.__basedir = __dirname;
+const server = http.createServer(app);
+const io = socketIO(server, {
+    cors: {
+        origin: "http://localhost:4200",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true
+    }
+});
 
+global.__basedir = __dirname;
 
 var corsOptions = {
     origin: "http://localhost:4200"
 };
-
-
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors(corsOptions));
@@ -38,7 +47,7 @@ db.sequelize.sync()
     // });
     // initial();
 
-// routes
+// Routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/post.routes')(app);
@@ -81,7 +90,23 @@ app.post('/api/auth/send-email', async(req, res) => {
     }
 });
 
+io.on("connection", (socket) => {
+    console.log("A user connected");
+
+    socket.on("disconnect", () => {
+        console.log("A user disconnected");
+    });
+
+    const followersController = require('./app/controllers/followers.controller');
+    followersController.setIO(io);
+
+});
+
+module.exports = {
+    io: io
+};
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
