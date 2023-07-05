@@ -36,6 +36,7 @@ db.likes = require("../models/likes-model.js")(sequelize, Sequelize);
 db.likes_timeline = require("../models/likes-timeline-model.js")(sequelize, Sequelize);
 db.photo_gallery = require("../models/photogallery-model.js")(sequelize, Sequelize);
 db.category = require("../models/category-model.js")(sequelize, Sequelize);
+db.accepted_messages = require("../models/accepted-message-model.js")(sequelize, Sequelize);
 
 
 db.role.belongsToMany(db.user, {

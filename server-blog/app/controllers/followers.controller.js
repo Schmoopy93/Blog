@@ -63,7 +63,6 @@ exports.following = (req, res) => {
             [Op.like]: `%${userId}%`
         }
     } : null;
-
     Followers.findAll({ where: [condition1, condition2], include: db.user })
         .then(data => {
             res.send(data);
@@ -170,27 +169,58 @@ exports.notifications = (req, res, io) => {
         });
 };
 
+// exports.acceptFriendship = async(req, res, next) => {
+//     try {
+//         const follower = await Followers.findOne({
+//             where: {
+//                 id: req.params.id
+//             }
+//         });
 
+//         if (!follower) {
+//             return res.status(404).json({ message: "Follower Not found." });
+//         }
 
-exports.acceptFriendship = (req, res, next) => {
-    Followers.findOne({
+//         follower.status = "Following";
+//         follower.message = "";
+//         await follower.save();
+//         console.log(follower, "follower")
+//         socket.emit('friendshipAccepted', follower);
+//         return res.status(200).json({ message: "has been accepted your friend request." });
+//     } catch (error) {
+//         console.log("Error saving follower:", error);
+//         return res.status(500).json({ message: error });
+//     }
+// };
+
+exports.acceptFriendship = async(req, res, next) => {
+    try {
+        const follower = await Followers.findOne({
             where: {
-                id: req.params.id
-            }
-        })
-        .then((follower) => {
+                id: req.params.id,
+            },
+            include: [{
+                model: db.user,
+                attributes: { exclude: ['data'] }
+            }]
+        });
 
-            if (!follower) {
-                return res.status(404).send({ message: "Follower Not found." });
-            }
-            follower.status = "Following";
-            follower.message = "";
-            follower.save((err) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-            });
-        })
-        .catch((e) => console.log("error", e));
+        if (!follower) {
+            return res.status(404).json({ message: 'Follower Not found.' });
+        }
+        follower.status = 'Following';
+        follower.message = '';
+        const firstname = follower.user.firstname;
+        const lastname = follower.user.lastname;
+        const userId = follower.userId;
+        await follower.save();
+        socket.emit('friendshipAccepted', { message: `Your friend request has been accepted by ${firstname} ${lastname}.` });
+
+        return res
+            .status(200)
+            .json({ message: `Your friend request has been accepted by ${firstname} ${lastname}.` });
+    } catch (error) {
+        console.log('Error saving follower:', error);
+        return res.status(500).json({ message: error });
+    }
 };
