@@ -27,13 +27,6 @@ module.exports = function(app) {
     app.post('/api/auth/users/retrieve-password', controller.retrievePassowrd);
     app.post('/api/auth/users/new-password', controller.newPassword);
     app.put('/api/auth/changeProfilePicture/upload', upload.single("file"), controller.changeProfilePicture);
-    // app.get('/generate-pdf', async(req, res) => {
-    //     const filePath = await generatePDF();
-    //     const fileStream = fs.createReadStream(filePath);
-    //     const readableStream = new Readable().wrap(fileStream);
-    //     res.set('Content-Type', 'application/pdf');
-    //     readableStream.pipe(res);
-    // });
     app.get('/generate-pdf', async(req, res) => {
         try {
             res.set('Cache-Control', 'no-store');
