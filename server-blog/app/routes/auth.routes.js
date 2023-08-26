@@ -49,4 +49,6 @@ module.exports = function(app) {
             res.status(500).send('Failed to generate PDF');
         }
     });
+    app.get('/api/auth/followedUsers', controller.getFilteredUsers);
+
 };

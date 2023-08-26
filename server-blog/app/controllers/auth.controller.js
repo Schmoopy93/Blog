@@ -223,6 +223,38 @@ exports.findAll = (req, res) => {
         });
 };
 
+
+exports.getFilteredUsers = async(req, res) => {
+    try {
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(page, size);
+
+        const loggedInUserId = req.query.id;
+
+        const sqlQuery = `
+            SELECT u.*
+            FROM users u
+            LEFT JOIN followers f ON u.id = f.followerId AND f.userId = '${loggedInUserId}'
+            WHERE f.followerId IS NULL AND u.id != '${loggedInUserId}'
+        `;
+
+        const usersData = await db.sequelize.query(sqlQuery, { type: db.sequelize.QueryTypes.SELECT });
+
+        const paginatedUsers = {
+            count: usersData.length,
+            rows: usersData.slice(offset, offset + limit)
+        };
+
+        const response = getPagingData(paginatedUsers, page, limit);
+
+        res.send(response);
+    } catch (error) {
+        res.status(500).send({
+            message: error.message || "Error while retrieving filtered users."
+        });
+    }
+};
+
 exports.findOne = (req, res) => {
     const id = req.params.id;
     User.findByPk(id, { include: [db.role, db.followers] })
