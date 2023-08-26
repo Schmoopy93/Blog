@@ -20,6 +20,11 @@ module.exports = (sequelize, Sequelize) => {
             charset: 'utf8mb4',
             collate: 'utf8mb4_unicode_ci'
         },
+        repeatPassword: {
+            type: Sequelize.STRING,
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
+        },
         firstname: {
             type: Sequelize.STRING,
             charset: 'utf8mb4',

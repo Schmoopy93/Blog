@@ -74,3 +74,21 @@ exports.delete = (req, res) => {
             });
         });
 };
+
+exports.updateAppointment = async(req, res) => {
+    const appointmentId = req.params.id;
+    const newData = req.body;
+    try {
+        const updateResult = await Appointment.update(newData, {
+            where: { id: appointmentId }
+        });
+
+        if (updateResult[0] === 0) {
+            return res.status(404).json({ success: false, message: 'Appointment not found' });
+        }
+
+        return res.status(200).json({ success: true, message: 'Appointment updated successfully' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};

@@ -10,6 +10,10 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var crypto = require("crypto");
 const fs = require("fs");
+const path = require('path');
+const pdfMake = require('pdfmake');
+const moment = require('moment');
+
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;
@@ -39,12 +43,17 @@ exports.signup = (req, res) => {
         return res.send(`You must select a file.`);
     }
 
+    if (req.body.password !== req.body.repeatPassword) {
+        return res.status(422).send({ error: "Passwords do not match" });
+    }
+
     User.create({
         username: req.body.username,
         email: req.body.email,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         password: bcrypt.hashSync(req.body.password, 8),
+        repeatPassword: bcrypt.hashSync(req.body.repeatPassword, 8),
         confirmationCode: token,
         type: req.file.mimetype,
         photoName: photoName,
@@ -214,6 +223,38 @@ exports.findAll = (req, res) => {
         });
 };
 
+
+exports.getFilteredUsers = async(req, res) => {
+    try {
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(page, size);
+
+        const loggedInUserId = req.query.id;
+
+        const sqlQuery = `
+            SELECT u.*
+            FROM users u
+            LEFT JOIN followers f ON u.id = f.followerId AND f.userId = '${loggedInUserId}'
+            WHERE f.followerId IS NULL AND u.id != '${loggedInUserId}'
+        `;
+
+        const usersData = await db.sequelize.query(sqlQuery, { type: db.sequelize.QueryTypes.SELECT });
+
+        const paginatedUsers = {
+            count: usersData.length,
+            rows: usersData.slice(offset, offset + limit)
+        };
+
+        const response = getPagingData(paginatedUsers, page, limit);
+
+        res.send(response);
+    } catch (error) {
+        res.status(500).send({
+            message: error.message || "Error while retrieving filtered users."
+        });
+    }
+};
+
 exports.findOne = (req, res) => {
     const id = req.params.id;
     User.findByPk(id, { include: [db.role, db.followers] })
@@ -298,23 +339,175 @@ exports.retrievePassowrd = (req, res) => {
 }
 
 exports.newPassword = (req, res) => {
-    const newPassword = req.body.password
-    const sentToken = req.body.token
+    const newPassword = req.body.password;
+    const repeatPassword = req.body.repeatPassword;
+    const sentToken = req.body.token;
     User.findOne({ where: { resetToken: sentToken } })
-        .then(user => {
+        .then((user) => {
             if (!user) {
-                return res.status(422).send({ error: "Try again session expired" })
+                return res.status(422).send({ error: "Try again session expired" });
             }
-            bcrypt.hash(newPassword, 12).then(hashedpassword => {
-                user.password = hashedpassword
+            if (newPassword !== repeatPassword) {
+                return res.status(422).send({ error: "Passwords do not match" });
+            }
+            bcrypt.hash(newPassword, 12).then((hashedpassword) => {
+                user.password = hashedpassword;
                 user.resetToken = "";
-                user.expireToken = undefined
+                user.expireToken = undefined;
                 user.save().then((saveduser) => {
-                    return res.status(404).send({ message: "Password updated success" })
-                })
+                    return res.status(404).send({ message: "Password updated success" });
+                });
             });
-
-        }).catch(err => {
-            console.log(err)
         })
-}
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
+exports.generatePDF = async() => {
+    try {
+        const users = await User.findAll();
+
+        if (!users || users.length === 0) {
+            throw new Error('Users not found');
+        }
+
+        const fonts = {
+            Roboto: {
+                normal: path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf'),
+                bold: path.join(process.cwd(), 'fonts', 'Roboto-Bold.ttf'),
+                italics: path.join(process.cwd(), 'fonts', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(process.cwd(), 'fonts', 'Roboto-BoldItalic.ttf'),
+            },
+        };
+
+        const tableContent = [
+            [
+                { text: 'Avatar', style: 'tableHeader' },
+                { text: 'Korisničko ime', style: 'tableHeader' },
+                { text: 'Ime', style: 'tableHeader' },
+                { text: 'Prezime', style: 'tableHeader' },
+                { text: 'Email', style: 'tableHeader' },
+                { text: 'Status', style: 'tableHeader' },
+                { text: 'Datum registracije', style: 'tableHeader' },
+            ],
+            ...users.map((user) => [{
+                    image: user.data,
+                    fit: [40, 40],
+                    alignment: 'center',
+                    style: 'tableImage',
+                },
+                { text: user.username, style: 'tableCell' },
+                { text: user.firstname, style: 'tableCell' },
+                { text: user.lastname, style: 'tableCell' },
+                { text: user.email, style: 'tableCell' },
+                { text: user.status, style: 'tableCell' },
+                { text: moment(user.createdAt).format('DD.MM.YYYY'), style: 'tableCell' },
+            ]),
+        ];
+
+        const docDefinition = {
+            content: [
+                { text: 'Lista korisnika', style: 'header' },
+                { table: { body: tableContent }, style: 'table' },
+            ],
+            styles: {
+                header: { fontSize: 26, bold: true, alignment: 'center' },
+                table: { margin: [0, 10, 0, 10] },
+                tableHeader: { fontSize: 14, bold: true, fillColor: '#dddddd' },
+                tableCell: { fontSize: 12, bold: true },
+                tableImage: {
+                    borderRadius: 5,
+                    decoration: 'rounded',
+                },
+            },
+            defaultStyle: { font: 'Roboto' },
+            pageMargins: [40, 40, 40, 40],
+        };
+
+        const printer = new pdfMake(fonts);
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const filePath = `./user-list.pdf`;
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        pdfDoc.pipe(fs.createWriteStream(filePath));
+        pdfDoc.end();
+
+        return filePath;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to generate PDF');
+    }
+};
+
+
+exports.changeProfilePicture = (req, res) => {
+    try {
+        console.log(req.file);
+
+        if (req.file == undefined) {
+            return res.send(`You must select a file.`);
+        }
+        User.update({
+            type: req.file.mimetype,
+            name: req.file.originalname,
+            userId: req.body.userId,
+            data: fs.readFileSync(
+                __basedir + "/uploads/userphoto/" + req.file.filename
+            ),
+
+        }).then((user) => {
+            fs.writeFileSync(
+                __basedir + "/uploads/userphoto/" + user.name,
+                user.data
+            );
+
+
+            return res.send(`File has been uploaded.`);
+        });
+    } catch (error) {
+        console.log(error);
+        return res.send(`Error when trying upload posts: ${error}`);
+    }
+};
+
+exports.changeProfilePicture = async(req, res) => {
+    try {
+        console.log(req.file);
+
+        if (req.file === undefined) {
+            return res.status(400).send('You must select a file.');
+        }
+
+        const userId = req.body.userId;
+        const user = await User.findOne({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
+
+        const { mimetype, originalname, filename } = req.file;
+
+        const data = fs.readFileSync(req.file.path);
+        var photoNameEncrypted = crypto.randomBytes(20).toString('hex');
+        user.data = data;
+        user.type = mimetype;
+        user.photoName = photoNameEncrypted;
+
+        await user.save();
+
+        const targetDirectory = path.join(__basedir, 'uploads/userphoto');
+        const targetPath = path.join(targetDirectory, user.photoName);
+        fs.writeFileSync(targetPath, user.data);
+
+        fs.unlinkSync(req.file.path);
+
+        return res.status(200).send('Profile picture has been updated.');
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(`Error when trying to update profile picture: ${error}`);
+    }
+};

@@ -18,16 +18,35 @@ const getPagingData = (data, page, limit) => {
     return { totalItems, followers, totalPages, currentPage };
 };
 
-exports.follow = (req, res) => {
+let socket; // Initialize a variable to store the io object
+
+exports.setIO = (socketIO) => {
+    socket = socketIO;
+};
+
+exports.follow = async(req, res, io) => {
     try {
-        Followers.create({
+        const follower = await Followers.create({
             userId: req.body.userId,
             followerId: req.body.followerId,
-            message: req.body.message
+            message: req.body.message,
+        });
+        if (socket) {
+            socket.emit('followerCreated', follower);
+            socket.emit('notifications', follower);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Follower created successfully',
+            data: follower,
         });
     } catch (error) {
         console.log(error);
-        return res.send(`Error when trying upload followers: ${error}`);
+        return res.status(500).json({
+            success: false,
+            message: `Error when trying to create follower: ${error}`,
+        });
     }
 };
 
@@ -44,7 +63,6 @@ exports.following = (req, res) => {
             [Op.like]: `%${userId}%`
         }
     } : null;
-
     Followers.findAll({ where: [condition1, condition2], include: db.user })
         .then(data => {
             res.send(data);
@@ -102,47 +120,107 @@ exports.friendList = (req, res) => {
         });
 };
 
-exports.notifications = (req, res) => {
+// exports.notifications = (req, res) => {
+//     const { followerId, page, size } = req.query;
+//     var condition = followerId ? {
+//         followerId: {
+//             [Op.like]: `%${followerId}%`
+//         }
+//     } : null;
+
+//     const { limit, offset } = getPagination(page, size);
+
+//     Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
+//         .then(data => {
+//             const response = getPagingData(data, page, limit);
+//             res.send(response);
+//         })
+//         .catch(err => {
+//             res.status(500).send({
+//                 message: err.message || "Some error occurred while retrieving followers."
+//             });
+//         });
+// };
+
+exports.notifications = (req, res, io) => {
     const { followerId, page, size } = req.query;
     var condition = followerId ? {
         followerId: {
-            [Op.like]: `%${followerId}%`
-        }
+            [Op.like]: `%${followerId}%`,
+        },
     } : null;
 
     const { limit, offset } = getPagination(page, size);
 
-    Followers.findAndCountAll({ where: condition, limit, offset, include: [db.user] })
-        .then(data => {
+    Followers.findAndCountAll({
+            where: condition,
+            limit,
+            offset,
+            //include: [db.user],
+        })
+        .then((data) => {
             const response = getPagingData(data, page, limit);
             res.send(response);
         })
-        .catch(err => {
+        .catch((err) => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving followers."
+                message: err.message || "Some error occurred while retrieving followers.",
             });
         });
 };
 
-exports.acceptFriendship = (req, res, next) => {
-    Followers.findOne({
-            where: {
-                id: req.params.id
-            }
-        })
-        .then((follower) => {
+// exports.acceptFriendship = async(req, res, next) => {
+//     try {
+//         const follower = await Followers.findOne({
+//             where: {
+//                 id: req.params.id
+//             }
+//         });
 
-            if (!follower) {
-                return res.status(404).send({ message: "Follower Not found." });
-            }
-            follower.status = "Following";
-            follower.message = "";
-            follower.save((err) => {
-                if (err) {
-                    res.status(500).send({ message: err });
-                    return;
-                }
-            });
-        })
-        .catch((e) => console.log("error", e));
+//         if (!follower) {
+//             return res.status(404).json({ message: "Follower Not found." });
+//         }
+
+//         follower.status = "Following";
+//         follower.message = "";
+//         await follower.save();
+//         console.log(follower, "follower")
+//         socket.emit('friendshipAccepted', follower);
+//         return res.status(200).json({ message: "has been accepted your friend request." });
+//     } catch (error) {
+//         console.log("Error saving follower:", error);
+//         return res.status(500).json({ message: error });
+//     }
+// };
+
+exports.acceptFriendship = async(req, res, next) => {
+    try {
+        const follower = await Followers.findOne({
+            where: {
+                id: req.params.id,
+            },
+            include: [{
+                model: db.user,
+                attributes: { exclude: ['data'] }
+            }]
+        });
+
+        if (!follower) {
+            return res.status(404).json({ message: 'Follower Not found.' });
+        }
+        follower.status = 'Following';
+        follower.message = '';
+        const firstname = follower.user.firstname;
+        const lastname = follower.user.lastname;
+        const userId = follower.userId;
+        await follower.save();
+        socket.emit('friendshipAccepted', { message: `Your friend request has been accepted by ${firstname} ${lastname}.` });
+
+        return res
+            .status(200)
+            .json({ message: `Your friend request has been accepted by ${firstname} ${lastname}.` });
+    } catch (error) {
+        console.log('Error saving follower:', error);
+        return res.status(500).json({ message: error });
+    }
 };

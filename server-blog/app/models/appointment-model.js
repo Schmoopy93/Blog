@@ -13,7 +13,16 @@ module.exports = (sequelize, Sequelize) => {
         start: {
             type: Sequelize.STRING,
             required: true,
+        },
+        completed: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
+        },
+        backgroundColor: {
+            type: Sequelize.STRING,
+            defaultValue: 'blue'
         }
     });
+
     return Appointment;
 };
