@@ -1,7 +1,10 @@
 const db = require("../models");
 const Post = db.post;
+const User = db.user;
 const fs = require("fs");
 const Op = db.Sequelize.Op;
+const pdfMake = require('pdfmake');
+const path = require('path');
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 6;
@@ -32,9 +35,11 @@ exports.createPost = (req, res) => {
             type: req.file.mimetype,
             name: req.file.originalname,
             userId: req.body.userId,
+            categoryId: req.body.categoryId,
             data: fs.readFileSync(
                 __basedir + "/uploads/" + req.file.filename
             ),
+
         }).then((post) => {
             fs.writeFileSync(
                 __basedir + "/uploads/" + post.name,
@@ -50,11 +55,13 @@ exports.createPost = (req, res) => {
     }
 };
 
+
 exports.findAll = (req, res) => {
-    const { page, size, title } = req.query;
-    var condition = title ? {
-        title: {
-            [Op.like]: `%${title}%`
+    const { page, size, categoryId } = req.query;
+
+    var condition = categoryId ? {
+        categoryId: {
+            [Op.like]: `%${categoryId}%`
         }
     } : null;
 
@@ -66,7 +73,8 @@ exports.findAll = (req, res) => {
             order: [
                 ['id', 'DESC']
             ],
-            offset
+            offset,
+            include: db.category
         })
         .then(data => {
             const response = getPagingData(data, page, limit);
@@ -82,7 +90,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
-    Post.findByPk(id, { include: db.user })
+    Post.findByPk(id, { include: [db.user, db.category] })
         .then(data => {
             res.send(data);
         })
@@ -97,6 +105,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     Post.update(req.body, {
+
             where: { id: id }
         })
         .then(num => {
@@ -185,4 +194,64 @@ exports.findAllForHomePageMax3 = (req, res) => {
                 message: err.message || "Some error occurred while retrieving posts."
             });
         });
+};
+
+exports.generatePDFPostById = async(postId) => {
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            throw new Error('Post not found');
+        }
+
+        const user = await User.findByPk(post.userId);
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const author = { text: `Author: ${user.firstname + " " + user.lastname}`, style: 'author' };
+
+        const fonts = {
+            Roboto: {
+                normal: path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf'),
+                bold: path.join(process.cwd(), 'fonts', 'Roboto-Bold.ttf'),
+                italics: path.join(process.cwd(), 'fonts', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(process.cwd(), 'fonts', 'Roboto-BoldItalic.ttf'),
+            },
+        };
+
+        const docDefinition = {
+            content: [
+                { image: post.data, width: 500 },
+                '\n',
+                author,
+                '\n\n\n',
+                { text: post.title, style: 'header' },
+                '\n\n\n',
+                { text: post.content, style: 'content' },
+            ],
+            styles: {
+                header: { fontSize: 26, bold: true, alignment: 'center' },
+                content: { fontSize: 16 },
+                author: { fontSize: 14, italics: true, alignment: 'left' },
+            },
+            defaultStyle: { font: 'Roboto' },
+            pageMargins: [40, 40, 40, 40],
+        };
+
+        const printer = new pdfMake(fonts);
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const filePath = `./post-${postId}.pdf`;
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        pdfDoc.pipe(fs.createWriteStream(filePath));
+        pdfDoc.end();
+
+        return filePath;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to generate PDF');
+    }
 };
