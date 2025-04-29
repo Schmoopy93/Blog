@@ -18,7 +18,7 @@ const getPagingData = (data, page, limit) => {
     return { totalItems, followers, totalPages, currentPage };
 };
 
-let socket; // Initialize a variable to store the io object
+let socket;
 
 exports.setIO = (socketIO) => {
     socket = socketIO;

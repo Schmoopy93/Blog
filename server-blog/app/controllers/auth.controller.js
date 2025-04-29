@@ -391,12 +391,8 @@ exports.generatePDF = async() => {
                 { text: 'Status', style: 'tableHeader' },
                 { text: 'Datum registracije', style: 'tableHeader' },
             ],
-            ...users.map((user) => [{
-                    image: user.data,
-                    fit: [40, 40],
-                    alignment: 'center',
-                    style: 'tableImage',
-                },
+            ...users.map((user) => [
+                { image: user.data, fit: [40, 40], alignment: 'center', style: 'tableImage' },
                 { text: user.username, style: 'tableCell' },
                 { text: user.firstname, style: 'tableCell' },
                 { text: user.lastname, style: 'tableCell' },
@@ -416,23 +412,33 @@ exports.generatePDF = async() => {
                 table: { margin: [0, 10, 0, 10] },
                 tableHeader: { fontSize: 14, bold: true, fillColor: '#dddddd' },
                 tableCell: { fontSize: 12, bold: true },
-                tableImage: {
-                    borderRadius: 5,
-                    decoration: 'rounded',
-                },
+                tableImage: { borderRadius: 5, decoration: 'rounded' },
             },
             defaultStyle: { font: 'Roboto' },
             pageMargins: [40, 40, 40, 40],
         };
 
         const printer = new pdfMake(fonts);
-        const pdfDoc = printer.createPdfKitDocument(docDefinition);
-        const filePath = `./user-list.pdf`;
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const filePath = path.join(process.cwd(), 'user-list.pdf');
 
-        pdfDoc.pipe(fs.createWriteStream(filePath));
-        pdfDoc.end();
+        // Osiguraj da direktorijum postoji
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        await new Promise((resolve, reject) => {
+            const pdfDoc = printer.createPdfKitDocument(docDefinition);
+            const writeStream = fs.createWriteStream(filePath);
+
+            pdfDoc.pipe(writeStream);
+
+            writeStream.on('finish', resolve);
+            writeStream.on('error', reject);
+
+            pdfDoc.end();
+        });
 
         return filePath;
     } catch (error) {
