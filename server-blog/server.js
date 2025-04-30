@@ -5,7 +5,7 @@ const socketIO = require("socket.io");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { sendEmail } = require('./app/config/nodemailer.contractform.config.js');
-
+const { sendMessage } = require('./app/controllers/messages.controller.js'); // Uvezite vaš kontroler
 // Constants for roles that are stored in .env file
 const roleOneID = process.env.ROLE_ONE_ID;
 const roleTwoID = process.env.ROLE_TWO_ID;
@@ -39,7 +39,10 @@ app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
+const req = require("express/lib/request.js");
 const Role = db.role;
+let connectedUsers = new Set();
+let userStatus = {};
 
 db.sequelize.sync()
     // db.sequelize.sync({ force: true }).then(() => {
@@ -61,6 +64,7 @@ require('./app/routes/likes-timeline.routes')(app);
 require('./app/routes/photogallery.routes')(app);
 require('./app/routes/category.routes')(app);
 require('./app/routes/accepted-message.routes')(app);
+require('./app/routes/messages.routes')(app);
 
 function initial() {
     Role.create({
@@ -91,17 +95,68 @@ app.post('/api/auth/send-email', async(req, res) => {
     }
 });
 
-io.on("connection", (socket) => {
-    console.log("A user connected");
 
-    socket.on("disconnect", () => {
-        console.log("A user disconnected");
+io.on('connection', (socket) => {
+    console.log('a user connected', socket.id);
+
+    socket.on('userConnected', (userId) => {
+        connectedUsers.add(userId);
+        userStatus[userId] = 'online';
+        console.log('User connected:', userId);
+        io.emit('updateUserStatus', { userId, status: 'online' });
+    });
+
+
+    socket.on('userDisconnected', (userId) => {
+        connectedUsers.delete(userId);
+        userStatus[userId] = 'offline';
+        console.log('User disconnected:', userId);
+        io.emit('updateUserStatus', { userId, status: 'offline' });
+    });
+
+    socket.on('disconnect', () => {
+        const userId = Object.keys(userStatus).find(key => userStatus[key] === 'online');
+        if (userId) {
+            connectedUsers.delete(userId);
+            userStatus[userId] = 'offline';
+            io.emit('updateUserStatus', { userId, status: 'offline' });
+        }
+        console.log('User disconnected', socket.id);
+    });
+
+    socket.on('joinRoom', (roomId) => {
+        if (socket.roomId) {
+            socket.leave(socket.roomId);
+        }
+        socket.join(roomId);
+        socket.roomId = roomId;
     });
 
     const followersController = require('./app/controllers/followers.controller');
     followersController.setIO(io);
 
+    socket.on('chat message', async(messageData) => {
+        try {
+            await db.messages.create({
+                senderId: messageData.senderId,
+                receiverId: messageData.receiverId,
+                text: messageData.text
+            });
+            io.to(messageData.receiverId.toString()).emit('newMessage', messageData);
+        } catch (error) {
+            console.error('Greška prilikom snimanja poruke:', error);
+            io.to(messageData.senderId.toString()).emit('error', { message: 'Došlo je do greške prilikom snimanja poruke.' });
+        }
+    });
+
 });
+
+function updateUserStatuses() {
+    connectedUsers.forEach((userId) => {
+        io.emit('updateUserStatus', { userId, status: userStatus[userId] });
+    });
+}
+setInterval(updateUserStatuses, 2000);
 
 module.exports = {
     io: io
