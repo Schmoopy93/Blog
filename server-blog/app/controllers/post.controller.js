@@ -199,18 +199,12 @@ exports.findAllForHomePageMax3 = (req, res) => {
 exports.generatePDFPostById = async(postId) => {
     try {
         const post = await Post.findByPk(postId);
-
-        if (!post) {
-            throw new Error('Post not found');
-        }
+        if (!post) throw new Error('Post not found');
 
         const user = await User.findByPk(post.userId);
+        if (!user) throw new Error('User not found');
 
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        const author = { text: `Author: ${user.firstname + " " + user.lastname}`, style: 'author' };
+        const author = { text: `Author: ${user.firstname} ${user.lastname}`, style: 'author' };
 
         const fonts = {
             Roboto: {
@@ -221,9 +215,17 @@ exports.generatePDFPostById = async(postId) => {
             },
         };
 
+        // Proveri da li je post.data base64 string, ako nije, konvertuj
+        let imageData = post.data;
+        if (Buffer.isBuffer(imageData)) {
+            imageData = imageData.toString('base64');
+        }
+        // pdfmake očekuje format: { image: 'data:image/jpeg;base64,...' }
+        const image = `data:image/jpeg;base64,${imageData}`;
+
         const docDefinition = {
             content: [
-                { image: post.data, width: 500 },
+                { image, width: 500 },
                 '\n',
                 author,
                 '\n\n\n',
@@ -242,16 +244,20 @@ exports.generatePDFPostById = async(postId) => {
 
         const printer = new pdfMake(fonts);
         const pdfDoc = printer.createPdfKitDocument(docDefinition);
-        const filePath = `./post-${postId}.pdf`;
+        const filePath = path.join(process.cwd(), `post-${postId}.pdf`);
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        pdfDoc.pipe(fs.createWriteStream(filePath));
-        pdfDoc.end();
+        // Vraća promise koji se resolve-uje kada je fajl upisan
+        await new Promise((resolve, reject) => {
+            const stream = fs.createWriteStream(filePath);
+            pdfDoc.pipe(stream);
+            pdfDoc.end();
+            stream.on('finish', resolve);
+            stream.on('error', reject);
+        });
 
         return filePath;
     } catch (error) {
-        console.error(error);
-        throw new Error('Failed to generate PDF');
+        console.error('PDF generation error:', error);
+        throw new Error('Failed to generate PDF: ' + error.message);
     }
 };

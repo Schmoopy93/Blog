@@ -365,7 +365,10 @@ exports.newPassword = (req, res) => {
 };
 
 exports.generatePDF = async() => {
+    console.log("You are in generatePDF function");
     try {
+
+
         const users = await User.findAll();
 
         if (!users || users.length === 0) {

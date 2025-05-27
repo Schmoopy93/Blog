@@ -29,15 +29,25 @@ module.exports = function(app) {
     app.post('/api/auth/users/retrieve-password', controller.retrievePassowrd);
     app.post('/api/auth/users/new-password', controller.newPassword);
     app.put('/api/auth/changeProfilePicture/upload', upload.single("file"), controller.changeProfilePicture);
-    router.get('/generate-pdf', async(req, res) => {
+    app.get('/generate-pdf', async(req, res) => {
         try {
             const filePath = await controller.generatePDF();
-
-            // Pošalji PDF fajl kao odgovor
             res.download(filePath, 'user-list.pdf', (err) => {
                 if (err) {
                     console.error("Error sending PDF file:", err);
                     res.status(500).send("Error generating PDF");
+                } else {
+                    if (fs.existsSync(filePath)) {
+                        fs.unlink(filePath, (unlinkErr) => {
+                            if (unlinkErr) {
+                                console.error("Error deleting PDF file:", unlinkErr);
+                            } else {
+                                console.log("File deleted successfully");
+                            }
+                        });
+                    } else {
+                        console.warn("File does not exist, cannot delete:", filePath);
+                    }
                 }
             });
         } catch (error) {

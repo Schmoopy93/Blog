@@ -9,10 +9,11 @@ exports.createCategory = (req, res) => {
         })
         .then((category) => {
             console.log(">> Created category: " + JSON.stringify(category, null, 4));
-            return category;
+            res.status(201).json(category);
         })
         .catch((err) => {
             console.log(">> Error while creating category: ", err);
+            res.status(500).json({ message: "Error while creating category", error: err.message });
         });
 };
 

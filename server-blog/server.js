@@ -5,8 +5,8 @@ const socketIO = require("socket.io");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { sendEmail } = require('./app/config/nodemailer.contractform.config.js');
-const { sendMessage } = require('./app/controllers/messages.controller.js'); // Uvezite vaš kontroler
-// Constants for roles that are stored in .env file
+const { sendMessage } = require('./app/controllers/messages.controller.js');
+
 const roleOneID = process.env.ROLE_ONE_ID;
 const roleTwoID = process.env.ROLE_TWO_ID;
 const roleThreeID = process.env.ROLE_THREE_ID;
@@ -28,12 +28,20 @@ const io = socketIO(server, {
 
 global.__basedir = __dirname;
 
-var corsOptions = {
-    origin: "http://localhost:4200"
+const corsOptions = {
+    origin: ["http://localhost:4200", "http://app:4200"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
+    credentials: true,
 };
 
-app.use('/uploads', express.static(__dirname + '/uploads'));
+
 app.use(cors(corsOptions));
+
+
+app.options("*", cors(corsOptions));
+
+app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(bodyParser.json({ limit: '5mb' }));
 app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
