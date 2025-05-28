@@ -37,6 +37,7 @@ db.likes_timeline = require("../models/likes-timeline-model.js")(sequelize, Sequ
 db.photo_gallery = require("../models/photogallery-model.js")(sequelize, Sequelize);
 db.category = require("../models/category-model.js")(sequelize, Sequelize);
 db.accepted_messages = require("../models/accepted-message-model.js")(sequelize, Sequelize);
+db.messages = require("../models/messages-model.js")(sequelize, Sequelize);
 
 
 db.role.belongsToMany(db.user, {
@@ -116,6 +117,17 @@ db.user.hasMany(db.likes_timeline, { as: "likesTimeline" });
 db.likes_timeline.belongsTo(db.user, {
     foreignKey: "userId",
     as: "user",
+});
+
+
+db.messages.belongsTo(db.user, {
+    as: 'sender',
+    foreignKey: 'senderId'
+});
+
+db.messages.belongsTo(db.user, {
+    as: 'receiver',
+    foreignKey: 'receiverId'
 });
 
 

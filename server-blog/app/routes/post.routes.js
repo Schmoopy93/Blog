@@ -21,25 +21,28 @@ module.exports = function(app) {
     app.delete("/api/auth/posts/", controller.deleteAll);
     app.get('/posts/pdf/:id', async(req, res) => {
         try {
-            res.set('Cache-Control', 'no-store');
-            res.set('Pragma', 'no-cache');
-            const postId = req.params.id;
-            const filePath = await generatePDFPostById(postId);
-            const fileStream = fs.createReadStream(filePath);
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        console.error('Failed to delete file:', err);
+            const filePath = await controller.generatePDFPostById(req.params.id);
+            res.download(filePath, `post-${req.params.id}.pdf`, (err) => {
+                if (err) {
+                    console.error("Error sending PDF file:", err);
+                    res.status(500).send("Error generating PDF");
+                } else {
+                    if (fs.existsSync(filePath)) {
+                        fs.unlink(filePath, (unlinkErr) => {
+                            if (unlinkErr) {
+                                console.error("Error deleting PDF file:", unlinkErr);
+                            } else {
+                                console.log("File deleted successfully");
+                            }
+                        });
                     } else {
-                        console.log('File deleted successfully');
+                        console.warn("File does not exist, cannot delete:", filePath);
                     }
-                });
-            }
-            res.setHeader('Content-Type', 'application/pdf;');
-            fileStream.pipe(res);
+                }
+            });
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Failed to generate PDF');
+            console.error("Failed to generate PDF:", error);
+            res.status(500).send("Failed to generate PDF");
         }
     });
-}
+};

@@ -4,6 +4,8 @@ let upload = require('../config/userphoto-multer.config');
 const { generatePDF } = require('../controllers/auth.controller.js');
 const fs = require('fs');
 const { Readable } = require('stream');
+const express = require('express');
+const router = express.Router();
 module.exports = function(app) {
     app.use(function(req, res, next) {
         res.header(
@@ -29,24 +31,28 @@ module.exports = function(app) {
     app.put('/api/auth/changeProfilePicture/upload', upload.single("file"), controller.changeProfilePicture);
     app.get('/generate-pdf', async(req, res) => {
         try {
-            res.set('Cache-Control', 'no-store');
-            res.set('Pragma', 'no-cache');
-            const filePath = await generatePDF();
-            const fileStream = fs.createReadStream(filePath);
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        console.error('Failed to delete file:', err);
+            const filePath = await controller.generatePDF();
+            res.download(filePath, 'user-list.pdf', (err) => {
+                if (err) {
+                    console.error("Error sending PDF file:", err);
+                    res.status(500).send("Error generating PDF");
+                } else {
+                    if (fs.existsSync(filePath)) {
+                        fs.unlink(filePath, (unlinkErr) => {
+                            if (unlinkErr) {
+                                console.error("Error deleting PDF file:", unlinkErr);
+                            } else {
+                                console.log("File deleted successfully");
+                            }
+                        });
                     } else {
-                        console.log('File deleted successfully');
+                        console.warn("File does not exist, cannot delete:", filePath);
                     }
-                });
-            }
-            res.setHeader('Content-Type', 'application/pdf;');
-            fileStream.pipe(res);
+                }
+            });
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Failed to generate PDF');
+            console.error("Failed to generate PDF:", error);
+            res.status(500).send("Failed to generate PDF");
         }
     });
     app.get('/api/auth/followedUsers', controller.getFilteredUsers);
