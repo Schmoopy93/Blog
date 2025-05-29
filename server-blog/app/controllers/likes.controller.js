@@ -19,19 +19,19 @@ const getPagingData = (data, pageLikes, limit) => {
 };
 
 exports.likePost = (req, res) => {
-    return Likes.create({
+    Likes.create({
             postId: req.body.postId,
             userId: req.body.userId
         })
         .then((like) => {
             console.log(">> Created like: " + JSON.stringify(like, null, 4));
-            return like;
+            return res.status(201).json(like);
         })
         .catch((err) => {
             console.log(">> Error while creating like: ", err);
+            return res.status(500).json({ message: "Error while creating like", error: err });
         });
 };
-
 exports.findAllLikesPagination = (req, res) => {
     const { pageLikes, pageSizeLikes, postId, userId } = req.query;
     var condition = postId ? {

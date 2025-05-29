@@ -26,10 +26,11 @@ exports.createComment = (req, res) => {
         })
         .then((comment) => {
             console.log(">> Created comment: " + JSON.stringify(comment, null, 4));
-            return comment;
+            return res.status(201).json(comment);
         })
         .catch((err) => {
             console.log(">> Error while creating comment: ", err);
+            return res.status(500).json({ message: "Error while creating comment", error: err });
         });
 };
 
