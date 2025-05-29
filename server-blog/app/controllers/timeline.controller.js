@@ -27,10 +27,11 @@ exports.createTimeline = (req, res) => {
         })
         .then((timeline) => {
             console.log(">> Created timeline: " + JSON.stringify(timeline, null, 4));
-            return timeline;
+            return res.status(201).json(timeline);
         })
         .catch((err) => {
             console.log(">> Error while creating timeline: ", err);
+            return res.status(500).json({ message: "Error while creating timeline", error: err.message });
         });
 };
 

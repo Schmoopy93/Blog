@@ -8,12 +8,13 @@ exports.createMessageFromSocket = (req, res) => {
             text: req.body.text,
             userId: req.body.userId
         })
-        .then((category) => {
-            console.log(">> Created a message: " + JSON.stringify(category, null, 4));
-            return category;
+        .then((acceptedMessage) => {
+            console.log(">> Created a message: " + JSON.stringify(acceptedMessage, null, 4));
+            res.status(201).json(acceptedMessage);
         })
         .catch((err) => {
-            console.log(">> Error while creating category: ", err);
+            console.log(">> Error while creating a message: ", err);
+            res.status(500).json({ message: "Error while creating a message", error: err.message });
         });
 };
 

@@ -11,10 +11,11 @@ exports.createAppointment = (req, res) => {
         })
         .then((appointment) => {
             console.log(">> Created appointment: " + JSON.stringify(appointment, null, 4));
-            return appointment;
+            return res.status(201).json(appointment);
         })
         .catch((err) => {
             console.log(">> Error while creating appointment: ", err);
+            return res.status(500).json({ message: "Error while creating an appointment", error: err.message });
         });
 };
 

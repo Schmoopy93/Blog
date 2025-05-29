@@ -25,10 +25,11 @@ exports.likeTimeline = (req, res) => {
         })
         .then((like) => {
             console.log(">> Created like for timeline: " + JSON.stringify(like, null, 4));
-            return like;
+            res.status(201).json(like);
         })
         .catch((err) => {
             console.log(">> Error while creating like: ", err);
+            res.status(500).json({ message: "Error while creating a like", error: err.message });
         });
 };
 
