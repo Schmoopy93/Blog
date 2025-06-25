@@ -16,7 +16,7 @@ module.exports = function(app) {
     app.get('/api/auth/posts', controller.findAll);
     app.get('/api/auth/postsHomePage', controller.findAllForHomePageMax3);
     app.get("/api/auth/posts/:id", controller.findOne);
-    app.put("/api/auth/posts/:id", controller.update);
+    app.put("/api/auth/posts/:id", upload.single("file"), controller.update);
     app.delete("/api/auth/posts/:id", controller.delete);
     app.delete("/api/auth/posts/", controller.deleteAll);
     app.get('/posts/pdf/:id', async(req, res) => {

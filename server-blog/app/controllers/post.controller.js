@@ -101,29 +101,44 @@ exports.findOne = (req, res) => {
         });
 };
 // Update a Post by the id in the request
-exports.update = (req, res) => {
+exports.update = async(req, res) => {
     const id = req.params.id;
 
-    Post.update(req.body, {
+    try {
+        let updateData = {};
 
-            where: { id: id }
-        })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Post was updated successfully."
-                });
-            } else {
-                res.send({
-                    message: `Cannot update Post with id=${id}. Maybe Post was not found or req.body is empty!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Post with id=" + id
+        if (req.body.title !== undefined) updateData.title = req.body.title;
+        if (req.body.content !== undefined) updateData.content = req.body.content;
+        if (req.body.userId !== undefined) updateData.userId = req.body.userId;
+        if (req.body.categoryId !== undefined) updateData.categoryId = Number(req.body.categoryId);
+
+        if (req.file) {
+            updateData.type = req.file.mimetype;
+            updateData.name = req.file.originalname;
+            updateData.data = fs.readFileSync(
+                path.join(__basedir, "/uploads/", req.file.filename)
+            );
+            // Opcionalno: upiši fajl na disk pod originalnim imenom
+            fs.writeFileSync(
+                path.join(__basedir, "/uploads/", req.file.originalname),
+                updateData.data
+            );
+        }
+
+        const [num] = await Post.update(updateData, { where: { id: id } });
+
+        if (num === 1) {
+            res.send({ message: "Post was updated successfully." });
+        } else {
+            res.send({
+                message: `Cannot update Post with id=${id}. Maybe Post was not found or req.body is empty!`
             });
+        }
+    } catch (err) {
+        res.status(500).send({
+            message: "Error updating Post with id=" + id
         });
+    }
 };
 
 // Delete a Post with the specified id in the request
